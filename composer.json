@@ -12,13 +12,28 @@
   "require": {
     "php": "^8.3"
   },
-  "scripts": {
-    "test": "@php -r \"echo 'No runtime tests in enforcement baseline.'.PHP_EOL;\"",
-    "test:unit": "@test",
-    "lint": "@php -r \"echo 'No lint targets in enforcement baseline.'.PHP_EOL;\"",
-    "analyse": "@php -r \"echo 'No static analysis targets in enforcement baseline.'.PHP_EOL;\"",
-    "validate:larena": "test -f .larena/spec-ref.json && test -f .larena/launch-context.json",
-    "evidence:check": "test -f docs/project-management/evidence/runtime-security/batch-0/licensing-repository-transition/README.md && test -f docs/project-management/evidence/runtime-security/batch-0/licensing-repository-transition/file-map.json && test -f docs/project-management/evidence/runtime-security/batch-0/licensing-repository-transition/graph-sync-proposal.json && test -f docs/project-management/evidence/runtime-security/batch-0/licensing-repository-transition/independent-review.md"
+  "autoload": {
+    "psr-4": {
+      "Larena\\Licensing\\": "src/"
+    }
   },
-  "minimum-stability": "stable"
+  "autoload-dev": {
+    "psr-4": {
+      "Larena\\Licensing\\Tests\\": "tests/"
+    }
+  },
+  "scripts": {
+    "test": "php tests/Unit/CapabilityContractTest.php && php tests/Unit/LicensingFailsClosedTest.php",
+    "test:unit": "@test",
+    "lint": "find src tests -name '*.php' -print0 | xargs -0 -n1 php -l",
+    "analyse": "find src tests -name '*.php' -print0 | xargs -0 -n1 php -l",
+    "validate:larena": "@php -r 'foreach ([\"module.yaml\", \"src/Contracts/Capability.php\", \"src/Contracts/EntitlementSnapshot.php\", \"src/Contracts/LicensingRuntime.php\", \"src/Contracts/LicenseDecision.php\", \"src/Enums/EntitlementStatus.php\", \"src/Enums/LicenseDecisionStatus.php\"] as $file) { if (!is_file($file)) { fwrite(STDERR, \"Missing {$file}\\n\"); exit(1); } } echo \"Larena licensing contract skeleton is valid.\\n\";'",
+    "evidence:check": "test -f docs/project-management/evidence/runtime-security/batch-0/licensing-repository-transition/README.md && test -f docs/project-management/evidence/runtime-security/batch-0/licensing-repository-transition/file-map.json && test -f docs/project-management/evidence/runtime-security/batch-0/licensing-repository-transition/graph-sync-proposal.json && test -f docs/project-management/evidence/runtime-security/batch-0/licensing-repository-transition/independent-review.md && test -f docs/project-management/evidence/runtime-security/batch-1/licensing/implementation-summary.md && test -f docs/project-management/evidence/runtime-security/batch-1/licensing/tests.md && test -f docs/project-management/evidence/runtime-security/batch-1/licensing/smoke.md && test -f docs/project-management/evidence/runtime-security/batch-1/licensing/file-map.json && test -f docs/project-management/evidence/runtime-security/batch-1/licensing/deviations.json && test -f docs/project-management/evidence/runtime-security/batch-1/licensing/graph-sync-proposal.json && test -f docs/project-management/evidence/runtime-security/batch-1/licensing/code-review-feedback.md"
+  },
+  "config": {
+    "sort-packages": true,
+    "allow-plugins": {}
+  },
+  "minimum-stability": "stable",
+  "prefer-stable": true
 }

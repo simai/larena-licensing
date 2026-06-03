@@ -1,6 +1,6 @@
 name: licensing
 package: larena/licensing
-status: enforcement-baseline
+status: contract-skeleton
 edition: core
 product_layer: runtime-security
 license: Apache-2.0
@@ -12,5 +12,6 @@ canonical_specs:
   package_spec: specs/packages/licensing/package.json
   features: specs/packages/licensing/features.json
 implementation:
-  runtime_code_started: false
+  runtime_code_started: true
+  current_batch: runtime-security/batch-1/licensing
   launch_record_required: true
