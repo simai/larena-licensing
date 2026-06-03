@@ -3,7 +3,7 @@
   "package": "larena/licensing",
   "batch": "runtime-security/batch-1/licensing",
   "status": "no_canonical_graph_change_requested",
-  "source_commit": "pending_commit",
+  "source_commit": "7870db4",
   "findings": [
     {
       "type": "implementation_evidence",
