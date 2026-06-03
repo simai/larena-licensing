@@ -1,0 +1,24 @@
+{
+  "name": "larena/licensing",
+  "description": "Runtime licensing layer that decides which package, bundle and capability features are available to a site, with signed entitlement snapshots, trial restrictions, subscription/expiration policies, environment-aware licenses, limits and explainable locks.",
+  "type": "library",
+  "license": "Apache-2.0",
+  "authors": [
+    {
+      "name": "Rim Zabarov",
+      "homepage": "https://github.com/zabarov"
+    }
+  ],
+  "require": {
+    "php": "^8.3"
+  },
+  "scripts": {
+    "test": "@php -r \"echo \\\"No runtime tests in enforcement baseline.\\\\n\\\";\"",
+    "test:unit": "@test",
+    "lint": "@php -r \"echo \\\"No lint targets in enforcement baseline.\\\\n\\\";\"",
+    "analyse": "@php -r \"echo \\\"No static analysis targets in enforcement baseline.\\\\n\\\";\"",
+    "validate:larena": "@php -r \"foreach ([\".larena/spec-ref.json\",\".larena/launch-context.json\"] as $f) { if (!is_file($f)) { fwrite(STDERR, $f.\" missing\\\\n\"); exit(1); } } echo \\\"Larena metadata ok.\\\\n\\\";\"",
+    "evidence:check": "@php -r \"foreach ([\"docs/project-management/evidence/runtime-security/batch-0/licensing-repository-transition/README.md\",\"docs/project-management/evidence/runtime-security/batch-0/licensing-repository-transition/file-map.json\",\"docs/project-management/evidence/runtime-security/batch-0/licensing-repository-transition/graph-sync-proposal.json\",\"docs/project-management/evidence/runtime-security/batch-0/licensing-repository-transition/independent-review.md\"] as $f) { if (!is_file($f)) { fwrite(STDERR, $f.\" missing\\\\n\"); exit(1); } } echo \\\"Evidence ok.\\\\n\\\";\""
+  },
+  "minimum_stability": "stable"
+}

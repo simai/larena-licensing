@@ -1,0 +1,16 @@
+name: licensing
+package: larena/licensing
+status: enforcement-baseline
+edition: core
+product_layer: runtime-security
+license: Apache-2.0
+title: Larena Licensing
+description: Runtime licensing layer that decides which package, bundle and capability features are available to a site, with signed entitlement snapshots, trial restrictions, subscription/expiration policies, environment-aware licenses, limits and explainable locks.
+canonical_specs:
+  repository: simai/larena-specs
+  commit: 7c580ae
+  package_spec: specs/packages/licensing/package.json
+  features: specs/packages/licensing/features.json
+implementation:
+  runtime_code_started: false
+  launch_record_required: true
