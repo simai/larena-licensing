@@ -1,11 +1,11 @@
 {
-  "schema": "larena.package_spec_ref.v1",
+  "schema": "larena.package_specs_reference.v1",
   "package": "larena/licensing",
   "specs_repo": "simai/larena-specs",
-  "specs_commit": "7c580ae",
-  "launch_record_ref": "specs/implementation-planning/launch-records/licensing-repository-enforcement-baseline.json",
-  "package_spec_ref": "specs/packages/licensing/package.json",
-  "package_dna_ref": "specs/packages/licensing/dna.json",
-  "features_ref": "specs/packages/licensing/features.json",
-  "mode": "read_only_reference"
+  "specs_commit": "b5d1270ed4939908844e701b12b5a1c2dca074e7",
+  "package_spec": "specs/packages/licensing/package.json",
+  "package_dna": "specs/packages/licensing/dna.json",
+  "features_index": "specs/packages/licensing/features.json",
+  "canonical_update_allowed": false,
+  "graph_sync_proposal_required": true
 }

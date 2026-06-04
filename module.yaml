@@ -1,17 +1,18 @@
-name: licensing
 package: larena/licensing
-status: contract-skeleton
-edition: core
-product_layer: runtime-security
-license: Apache-2.0
 title: Larena Licensing
-description: Runtime licensing layer that decides which package, bundle and capability features are available to a site, with signed entitlement snapshots, trial restrictions, subscription/expiration policies, environment-aware licenses, limits and explainable locks.
-canonical_specs:
-  repository: simai/larena-specs
-  commit: 7c580ae
-  package_spec: specs/packages/licensing/package.json
-  features: specs/packages/licensing/features.json
-implementation:
-  runtime_code_started: true
-  current_batch: runtime-security/batch-1/licensing
-  launch_record_required: true
+status: repository_prepared
+cluster: runtime-security
+batch: batch-0-clean-pre-codegen-baseline
+features:
+  - licensing.admin_lock_explain
+  - licensing.capabilities
+  - licensing.entitlement_lifecycle
+  - licensing.entitlement_snapshot
+  - licensing.environment_license_policy
+  - licensing.package_bundle_policy
+  - licensing.trial_policy
+runtime:
+  php: "^8.3"
+  laravel: "^13.0"
+evidence:
+  path: docs/project-management/evidence/runtime-security/batch-0/licensing-clean-baseline/
