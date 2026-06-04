@@ -26,8 +26,8 @@
     "phpstan/phpstan": "^2.0"
   },
   "scripts": {
-    "test": "php scripts/test-placeholder.php",
-    "test:unit": "php scripts/test-placeholder.php",
+    "test": "php tests/Unit/CapabilityContractTest.php && php tests/Unit/LicensingFailsClosedTest.php && php tests/Unit/LicensingCapabilityDecisionRuntimeTest.php && php tests/Unit/LicensingCapabilityDecisionFailsClosedTest.php",
+    "test:unit": "php tests/Unit/CapabilityContractTest.php && php tests/Unit/LicensingFailsClosedTest.php && php tests/Unit/LicensingCapabilityDecisionRuntimeTest.php && php tests/Unit/LicensingCapabilityDecisionFailsClosedTest.php",
     "lint": "php scripts/lint.php",
     "analyse": "php scripts/analyse.php",
     "validate:larena": "php scripts/validate-larena-package.php",

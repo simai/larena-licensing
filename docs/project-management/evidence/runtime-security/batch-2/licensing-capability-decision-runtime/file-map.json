@@ -1,0 +1,30 @@
+{
+  "schema": "larena.evidence_file_map.v1",
+  "package": "larena/licensing",
+  "batch": "runtime-security/batch-2/licensing-capability-decision-runtime",
+  "changed_files": [
+    ".larena/launch-context.json",
+    "composer.json",
+    "src/Runtime/StaticCapability.php",
+    "src/Runtime/StaticEntitlementSnapshot.php",
+    "src/Runtime/RuntimeLicenseDecision.php",
+    "src/Runtime/SnapshotLicensingRuntime.php",
+    "tests/Unit/LicensingCapabilityDecisionRuntimeTest.php",
+    "tests/Unit/LicensingCapabilityDecisionFailsClosedTest.php",
+    "docs/project-management/evidence/runtime-security/batch-2/licensing-capability-decision-runtime/README.md",
+    "docs/project-management/evidence/runtime-security/batch-2/licensing-capability-decision-runtime/implementation-summary.md",
+    "docs/project-management/evidence/runtime-security/batch-2/licensing-capability-decision-runtime/independent-review.md",
+    "docs/project-management/evidence/runtime-security/batch-2/licensing-capability-decision-runtime/tests.md",
+    "docs/project-management/evidence/runtime-security/batch-2/licensing-capability-decision-runtime/smoke.md",
+    "docs/project-management/evidence/runtime-security/batch-2/licensing-capability-decision-runtime/file-map.json",
+    "docs/project-management/evidence/runtime-security/batch-2/licensing-capability-decision-runtime/deviations.json",
+    "docs/project-management/evidence/runtime-security/batch-2/licensing-capability-decision-runtime/graph-sync-proposal.json",
+    "docs/project-management/evidence/runtime-security/batch-2/licensing-capability-decision-runtime/code-review-feedback.md"
+  ],
+  "runtime_files_changed": [
+    "src/Runtime/StaticCapability.php",
+    "src/Runtime/StaticEntitlementSnapshot.php",
+    "src/Runtime/RuntimeLicenseDecision.php",
+    "src/Runtime/SnapshotLicensingRuntime.php"
+  ]
+}
