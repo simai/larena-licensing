@@ -1,0 +1,6 @@
+{
+  "schema": "larena.package_batch_deviations.v1",
+  "package": "larena/licensing",
+  "launch_record_ref": "specs/implementation-planning/launch-records/licensing-batch-1-contract-skeletons-current.json",
+  "deviations": []
+}

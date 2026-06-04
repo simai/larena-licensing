@@ -1,0 +1,30 @@
+{
+  "schema": "larena.package_batch_file_map.v1",
+  "package": "larena/licensing",
+  "launch_record_ref": "specs/implementation-planning/launch-records/licensing-batch-1-contract-skeletons-current.json",
+  "allowed_changed_files": [
+    ".larena/launch-context.json",
+    "phpstan.neon.dist",
+    "scripts/lint.php",
+    "scripts/test-placeholder.php",
+    "scripts/validate-larena-package.php",
+    "src/Contracts/Capability.php",
+    "src/Contracts/EntitlementSnapshot.php",
+    "src/Contracts/LicenseDecision.php",
+    "src/Contracts/LicensingRuntime.php",
+    "src/Enums/EntitlementStatus.php",
+    "src/Enums/LicenseDecisionStatus.php",
+    "tests/Unit/CapabilityContractTest.php",
+    "tests/Unit/LicensingFailsClosedTest.php"
+  ],
+  "evidence_files": [
+    "docs/project-management/evidence/runtime-security/batch-1/licensing-current/README.md",
+    "docs/project-management/evidence/runtime-security/batch-1/licensing-current/implementation-summary.md",
+    "docs/project-management/evidence/runtime-security/batch-1/licensing-current/tests.md",
+    "docs/project-management/evidence/runtime-security/batch-1/licensing-current/smoke.md",
+    "docs/project-management/evidence/runtime-security/batch-1/licensing-current/file-map.json",
+    "docs/project-management/evidence/runtime-security/batch-1/licensing-current/deviations.json",
+    "docs/project-management/evidence/runtime-security/batch-1/licensing-current/graph-sync-proposal.json",
+    "docs/project-management/evidence/runtime-security/batch-1/licensing-current/code-review-feedback.md"
+  ]
+}

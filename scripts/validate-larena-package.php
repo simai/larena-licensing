@@ -39,9 +39,7 @@ if (($launchContext['package'] ?? null) !== 'larena/licensing') {
     $errors[] = '.larena/launch-context.json package must be larena/licensing';
 }
 
-if (($launchContext['coding_started'] ?? null) !== false) {
-    $errors[] = 'coding_started must be false before a coding launch record.';
-}
+$contractCodingStarted = ($launchContext['coding_started'] ?? false) === true;
 
 if (!str_starts_with((string) ($launchContext['evidence_path'] ?? ''), 'docs/project-management/evidence/')) {
     $errors[] = 'launch-context evidence_path must start with docs/project-management/evidence/';
@@ -52,9 +50,32 @@ if (!str_starts_with((string) ($launchContext['graph_sync_proposal_path'] ?? '')
 }
 
 foreach (['src', 'config', 'database', 'routes', 'resources', 'tests', 'lang'] as $runtimePath) {
-    if (is_dir($runtimePath)) {
+    if (!$contractCodingStarted && is_dir($runtimePath)) {
         $errors[] = "{$runtimePath}/ is not allowed in this clean pre-codegen baseline commit.";
     }
+}
+if ($contractCodingStarted) {
+    foreach ([
+        'src/Contracts/Capability.php',
+        'src/Contracts/EntitlementSnapshot.php',
+        'src/Contracts/LicenseDecision.php',
+        'src/Contracts/LicensingRuntime.php',
+        'src/Enums/EntitlementStatus.php',
+        'src/Enums/LicenseDecisionStatus.php',
+        'tests/Unit/CapabilityContractTest.php',
+        'tests/Unit/LicensingFailsClosedTest.php',
+    ] as $contractFile) {
+        if (!is_file($contractFile)) {
+            $errors[] = "Missing contract skeleton file {$contractFile}.";
+        }
+    }
+}
+if (!in_array(($launchContext['status'] ?? null), [
+    'repository_prepared_pending_review',
+    'coding_started',
+    'contract_skeleton_review_passed',
+], true)) {
+    $errors[] = 'launch-context status is not allowed for this repository state.';
 }
 
 if ($errors !== []) {
@@ -64,4 +85,4 @@ if ($errors !== []) {
     exit(1);
 }
 
-echo "Larena Licensing clean pre-codegen baseline is valid.\n";
+echo "Larena Licensing coding launch context is valid.\n";
