@@ -1,51 +1,53 @@
 {
-  "name": "larena/licensing",
-  "description": "Larena Licensing: Runtime licensing layer that decides which package, bundle and capability features are available to a site, with signed entitlement snapshots, trial restrictions, subscription/expiration policies, environment-aware licenses, limits and explainable locks.",
-  "type": "library",
-  "license": "Apache-2.0",
-  "authors": [
-    {
-      "name": "Rim Zabarov",
-      "homepage": "https://github.com/zabarov"
-    }
-  ],
-  "require": {
-    "php": "^8.3"
-  },
-  "autoload": {
-    "psr-4": {
-      "Larena\\Licensing\\": "src/"
-    }
-  },
-  "autoload-dev": {
-    "psr-4": {
-      "Larena\\Licensing\\Tests\\": "tests/"
-    }
-  },
-  "require-dev": {
-    "phpstan/phpstan": "^2.0"
-  },
-  "scripts": {
-    "test": "php tests/Unit/CapabilityContractTest.php && php tests/Unit/LicensingFailsClosedTest.php && php tests/Unit/LicensingCapabilityDecisionRuntimeTest.php && php tests/Unit/LicensingCapabilityDecisionFailsClosedTest.php",
-    "test:unit": "php tests/Unit/CapabilityContractTest.php && php tests/Unit/LicensingFailsClosedTest.php && php tests/Unit/LicensingCapabilityDecisionRuntimeTest.php && php tests/Unit/LicensingCapabilityDecisionFailsClosedTest.php",
-    "lint": "php scripts/lint.php",
-    "analyse": "php scripts/analyse.php",
-    "validate:larena": "php scripts/validate-larena-package.php",
-    "evidence:check": "php scripts/check-evidence.php",
-    "scope:check": "php tools/larena-scope-check.php",
-    "quality:gate": [
-      "@validate:larena",
-      "@lint",
-      "@analyse",
-      "@test",
-      "@evidence:check",
-      "@scope:check"
-    ]
-  },
-  "config": {
-    "sort-packages": true,
-    "allow-plugins": {}
-  },
-  "minimum-stability": "stable",
-  "prefer-stable": true
+    "name": "larena/licensing",
+    "description": "Larena Licensing: Runtime licensing layer that decides which package, bundle and capability features are available to a site, with signed entitlement snapshots, trial restrictions, subscription/expiration policies, environment-aware licenses, limits and explainable locks.",
+    "type": "library",
+    "license": "Apache-2.0",
+    "authors": [
+        {
+            "name": "Rim Zabarov",
+            "homepage": "https://github.com/zabarov"
+        }
+    ],
+    "require": {
+        "php": "^8.3"
+    },
+    "autoload": {
+        "psr-4": {
+            "Larena\\Licensing\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Larena\\Licensing\\Tests\\": "tests/"
+        }
+    },
+    "require-dev": {
+        "phpstan/phpstan": "^2.0"
+    },
+    "scripts": {
+        "test": "php tests/Unit/CapabilityContractTest.php && php tests/Unit/LicensingFailsClosedTest.php && php tests/Unit/LicensingCapabilityDecisionRuntimeTest.php && php tests/Unit/LicensingCapabilityDecisionFailsClosedTest.php",
+        "test:unit": "php tests/Unit/CapabilityContractTest.php && php tests/Unit/LicensingFailsClosedTest.php && php tests/Unit/LicensingCapabilityDecisionRuntimeTest.php && php tests/Unit/LicensingCapabilityDecisionFailsClosedTest.php",
+        "lint": "php scripts/lint.php",
+        "analyse": "php scripts/analyse.php",
+        "validate:larena": "php scripts/validate-larena-package.php",
+        "evidence:check": "php scripts/check-evidence.php",
+        "scope:check": "php tools/larena-scope-check.php",
+        "quality:gate": [
+            "@validate:larena",
+            "@lint",
+            "@analyse",
+            "@test",
+            "@larena:metadata:check",
+            "@evidence:check",
+            "@scope:check"
+        ],
+        "larena:metadata:check": "php scripts/check-metadata-sync.php"
+    },
+    "config": {
+        "sort-packages": true,
+        "allow-plugins": {}
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
 }
