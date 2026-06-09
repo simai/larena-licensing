@@ -1,8 +1,8 @@
 package: larena/licensing
 title: Larena Licensing
-status: repository_prepared
+status: contract_skeleton_review_passed
 cluster: runtime-security
-batch: batch-0-clean-pre-codegen-baseline
+batch: licensing-batch-2-capability-decision-runtime
 features:
   - licensing.admin_lock_explain
   - licensing.capabilities
@@ -15,4 +15,4 @@ runtime:
   php: "^8.3"
   laravel: "^13.0"
 evidence:
-  path: docs/project-management/evidence/runtime-security/batch-0/licensing-clean-baseline/
+  path: docs/project-management/evidence/runtime-security/batch-2/licensing-capability-decision-runtime/
