@@ -1,0 +1,47 @@
+{
+  "schema": "larena.batch_file_map.v1",
+  "batch": "minimal-cms-v1-1-batch-5-licensing-environment-solution",
+  "wave": "A",
+  "package": "larena/licensing",
+  "changed_files": [
+    ".larena/launch-context.json",
+    "composer.json",
+    "docs/project-management/evidence/minimal-cms-v1-1-batch-5-licensing-environment-solution/",
+    "docs/project-management/launch-records/",
+    "module.yaml",
+    "src/Contracts/NodeAdmission.php",
+    "src/Contracts/NodeAdmissionDecision.php",
+    "src/Contracts/ScopeEntitlementDecision.php",
+    "src/Contracts/ScopeEntitlementResolver.php",
+    "src/Contracts/ScopedEntitlementSnapshot.php",
+    "src/Enums/DistributedCapability.php",
+    "src/Enums/NodeAdmissionStatus.php",
+    "src/Exceptions/",
+    "src/Runtime/DistributedCapabilityRegistry.php",
+    "src/Runtime/OperatorOverlayEntitlementResolver.php",
+    "src/Runtime/SnapshotNodeAdmission.php",
+    "src/Runtime/StaticScopedEntitlementSnapshot.php",
+    "tests/Unit/DistributedCapabilityDeclarationTest.php",
+    "tests/Unit/NodeAdmissionTest.php",
+    "tests/Unit/OperatorOverlayNarrowingTest.php",
+    "tests/Unit/ScopeEntitlementFailsClosedTest.php",
+    "tests/Unit/ScopeEntitlementResolverTest.php",
+    "tests/support/"
+  ],
+  "no_migration": true,
+  "specs_side": {
+    "repository": "simai/larena-specs",
+    "commit": "3900954a",
+    "files": [
+      "specs/project-management/larena-g4-1-commercial-capability-contract.json",
+      "specs/capabilities/registry.json",
+      "generated/reports/commercial-capability-adapter-ecosystem.json",
+      "generated/reports/commercial-capability-adapter-ecosystem.md"
+    ]
+  },
+  "untouched": [
+    "src/Runtime/SnapshotLicensingRuntime.php",
+    "src/Contracts/EntitlementSnapshot.php",
+    "src/Contracts/Capability.php"
+  ]
+}

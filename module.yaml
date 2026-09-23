@@ -1,8 +1,8 @@
 package: larena/licensing
 title: Larena Licensing
-status: contract_skeleton_review_passed
+status: coding_started
 cluster: runtime-security
-batch: licensing-batch-2-capability-decision-runtime
+batch: minimal-cms-v1-1-batch-5-wave-a-licensing-scope-entitlement
 features:
   - licensing.admin_lock_explain
   - licensing.capabilities
@@ -11,8 +11,9 @@ features:
   - licensing.environment_license_policy
   - licensing.package_bundle_policy
   - licensing.trial_policy
+  - licensing.scope_entitlement
 runtime:
   php: "^8.3"
   laravel: "^13.0"
 evidence:
-  path: docs/project-management/evidence/runtime-security/batch-2/licensing-capability-decision-runtime/
+  path: docs/project-management/evidence/minimal-cms-v1-1-batch-5-licensing-environment-solution

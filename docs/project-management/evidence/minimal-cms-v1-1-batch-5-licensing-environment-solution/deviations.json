@@ -1,0 +1,40 @@
+{
+  "schema": "larena.batch_deviations.v1",
+  "batch": "minimal-cms-v1-1-batch-5-licensing-environment-solution",
+  "wave": "A",
+  "package": "larena/licensing",
+  "launch_record_ref": "docs/project-management/launch-records/minimal-cms-v1-1-batch-5-wave-a-licensing-scope-entitlement.json",
+  "deviations": [
+    {
+      "id": "capability_binding_is_a_rule_not_a_field",
+      "kind": "frozen_decision_applied",
+      "path": "src/Runtime/DistributedCapabilityRegistry.php",
+      "detail": "The commercial capability registry's extensionCapability object is closed (additionalProperties: false), so an entry cannot carry the runtime capability key as a field.",
+      "resolution": "The registry id is derived from the runtime key by a frozen rule, and a package test computes the id for every declared key and cross-checks the real specs/capabilities/registry.json. A schema version bump plus a migration of every entry was rejected as disproportionate to a binding two lines of arithmetic express.",
+      "shape_impact": "none"
+    },
+    {
+      "id": "snapshot_sources_typed_mixed",
+      "kind": "implementation_choice",
+      "path": "src/Runtime/OperatorOverlayEntitlementResolver.php",
+      "detail": "PHPStan objected to a test passing a closure that returns a non-snapshot, which is exactly the case the resolver is meant to survive.",
+      "resolution": "The two sources are documented as returning mixed, because they come from outside this package and the resolver checks what it gets rather than trusting a type it cannot enforce at the boundary.",
+      "shape_impact": "none"
+    },
+    {
+      "id": "module_status_aligned",
+      "kind": "allowed_file_changed",
+      "path": "module.yaml",
+      "detail": "The metadata gate requires module.yaml status to equal the launch context status.",
+      "resolution": "status moved from contract_skeleton_review_passed to coding_started, with the batch, feature list and evidence path updated to this wave.",
+      "shape_impact": "none"
+    }
+  ],
+  "no_deviation_areas": [
+    "the two capability ids, tiers, mapping rule, resolution order, narrowing rule, admission inputs and reason codes follow the freeze exactly",
+    "SnapshotLicensingRuntime and the existing capability decision path are untouched",
+    "no table, no migration, no HTTP surface",
+    "nothing is minted or signed",
+    "no change to any package other than larena/licensing"
+  ]
+}

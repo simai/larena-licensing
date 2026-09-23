@@ -1,0 +1,43 @@
+{
+  "schema": "larena.graph_sync_proposal.v1",
+  "batch": "minimal-cms-v1-1-batch-5-licensing-environment-solution",
+  "wave": "A",
+  "package": "larena/licensing",
+  "canonical_update_allowed": false,
+  "canonical_update_reason": "a package coding wave never writes the canonical graph; the specs-side capability declaration is a separate, reviewed change to the G4.1 contract and its deterministic projection",
+  "target_semantic_digest": "sha256:cbbfa628327f11f1f2c958c9b24cc10334fba965b9cce232e40884a6f37a1d3f",
+  "feature_observations": [
+    {
+      "feature": "licensing.scope_entitlement",
+      "observed_state": "implemented",
+      "implemented": [
+        "an entitlement snapshot that names its scope, node limit and environment",
+        "an operator overlay a scope entitlement can only narrow",
+        "per-scope node limits taken as the minimum",
+        "node admission refusing without a verified snapshot bound to the node environment",
+        "the two distributed capabilities declared in the registry and bound to their runtime keys by a checkable rule",
+        "a free path that reads no snapshot at all"
+      ],
+      "not_implemented": [
+        "entitlement issuance and signature verification",
+        "per-scope capability limit metering beyond the node limit"
+      ],
+      "acceptance_covered": [
+        "an entitlement snapshot names the ScopeRef it applies to; a site-level snapshot remains valid for single-site installations without an organization",
+        "the operator level can hold entitlements for many organization scopes and an organization entitlement can only narrow the operator entitlement",
+        "the capabilities distributed.remote_operations and distributed.cluster are declared in the capability registry",
+        "a node joins a cluster only with a signed snapshot bound to its environment, and the node count limit is enforced at admission",
+        "the local transport, single-node REST, MCP and headless operation require no paid entitlement",
+        "scope entitlement explain shows the scope, the operator overlay, the limit state and the remediation without exposing signing material"
+      ],
+      "acceptance_not_covered": [
+        "capability limits such as record count, storage volume or AI budget are evaluated per scope through the existing limit API: the node limit is, the metered limits need a meter that does not exist",
+        "the network transport of the operation runtime fails closed without them: proven in Batch 3 against the gate, and the capability it names now exists"
+      ]
+    }
+  ],
+  "nonclaims": [
+    "Declaring a capability ships no implementation. The gate became nameable, not passable.",
+    "Nothing here verifies a signature or mints an entitlement."
+  ]
+}
