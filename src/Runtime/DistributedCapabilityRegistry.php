@@ -19,17 +19,16 @@ final class DistributedCapabilityRegistry
 {
     public const ID_PREFIX = 'larena.capability.';
 
-    public const ID_SUFFIX = '.v1';
-
     /**
      * `distributed.remote_operations` owned by `larena/core` becomes
-     * `larena.capability.core.distributed_remote_operations.v1`.
+     * `larena.capability.core.distributed_remote_operations`. The id carries no version (owner decision 2026-10-19);
+     * licences grant by the runtime key, so the id is only the registry's name for it.
      */
     public static function registryId(string $runtimeKey, string $owningPackage): string
     {
         $packageSlug = str_replace(['larena/', '-'], ['', '_'], $owningPackage);
 
-        return self::ID_PREFIX . $packageSlug . '.' . str_replace('.', '_', $runtimeKey) . self::ID_SUFFIX;
+        return self::ID_PREFIX . $packageSlug . '.' . str_replace('.', '_', $runtimeKey);
     }
 
     public static function idFor(DistributedCapability $capability): string

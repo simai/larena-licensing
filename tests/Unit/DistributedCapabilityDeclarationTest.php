@@ -15,19 +15,19 @@ use Larena\Licensing\Runtime\DistributedCapabilityRegistry;
  */
 licensing_assert(
     DistributedCapabilityRegistry::registryId('distributed.remote_operations', 'larena/core')
-        === 'larena.capability.core.distributed_remote_operations.v1',
+        === 'larena.capability.core.distributed_remote_operations',
     'the mapping rule produces the frozen id',
 );
 licensing_assert(
     DistributedCapabilityRegistry::registryId('distributed.cluster', 'larena/core')
-        === 'larena.capability.core.distributed_cluster.v1',
+        === 'larena.capability.core.distributed_cluster',
 );
 
 // The rule works for a hyphenated package too, which is how it stays a rule rather
 // than two special cases.
 licensing_assert(
     DistributedCapabilityRegistry::registryId('file_manager.bulk', 'larena/file-manager')
-        === 'larena.capability.file_manager.file_manager_bulk.v1',
+        === 'larena.capability.file_manager.file_manager_bulk',
 );
 
 $declared = DistributedCapabilityRegistry::all();

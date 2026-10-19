@@ -49,8 +49,8 @@ reason, because that is what an operator needs to act on.
 
 | Runtime key | Registry id | Tier |
 | --- | --- | --- |
-| `distributed.remote_operations` | `larena.capability.core.distributed_remote_operations.v1` | Pro |
-| `distributed.cluster` | `larena.capability.core.distributed_cluster.v1` | Enterprise |
+| `distributed.remote_operations` | `larena.capability.core.distributed_remote_operations` | Pro |
+| `distributed.cluster` | `larena.capability.core.distributed_cluster` | Enterprise |
 
 The id is derived from the key by rule, and a test cross-checks the real registry.
 Declaring a capability ships no implementation: the gate becomes nameable, not
