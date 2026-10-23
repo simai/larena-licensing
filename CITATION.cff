@@ -1,0 +1,11 @@
+cff-version: 1.2.0
+message: "If you refer to Larena Licensing, please cite it as below."
+title: "Larena Licensing"
+abstract: "Larena Licensing: Runtime licensing layer that decides which package, bundle and capability features are available to a site, with signed entitlement snapshots, trial restrictions, subscription/expiration policies, environment-aware licenses, limits and explainable locks."
+type: software
+authors:
+  - family-names: "Zabarov"
+    given-names: "Rim"
+    email: "rim@zabarov.com"
+license: Apache-2.0
+repository-code: "https://github.com/simai/larena-licensing"

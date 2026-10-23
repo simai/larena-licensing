@@ -117,7 +117,12 @@
     "tests/Unit/OperatorOverlayNarrowingTest.php",
     "tests/Unit/ScopeEntitlementFailsClosedTest.php",
     "tests/Unit/ScopeEntitlementResolverTest.php",
-    "tests/support/scope-entitlement-fixtures.php"
+    "tests/support/scope-entitlement-fixtures.php",
+    "LICENSE",
+    "NOTICE",
+    "AUTHORS",
+    "CITATION.cff",
+    "REUSE.toml"
   ],
   "forbidden_files": [
     "src/Runtime/SnapshotLicensingRuntime.php",
