@@ -49,7 +49,7 @@ reason, because that is what an operator needs to act on.
 
 | Runtime key | Registry id | Tier |
 | --- | --- | --- |
-| `distributed.remote_operations` | `larena.capability.core.distributed_remote_operations` | Pro |
+| `distributed.remote_operations` | `larena.capability.core.distributed_remote_operations` | Paid |
 | `distributed.cluster` | `larena.capability.core.distributed_cluster` | Enterprise |
 
 The id is derived from the key by rule, and a test cross-checks the real registry.

@@ -33,7 +33,7 @@ licensing_assert(
 $declared = DistributedCapabilityRegistry::all();
 licensing_assert(count($declared) === 2, 'exactly two distributed capabilities');
 
-licensing_assert($declared['distributed.remote_operations']['tier'] === 'pro');
+licensing_assert($declared['distributed.remote_operations']['tier'] === 'paid');
 licensing_assert($declared['distributed.cluster']['tier'] === 'enterprise');
 foreach ($declared as $entry) {
     licensing_assert($entry['package'] === 'larena/core', 'both belong to core, which owns the transport port');

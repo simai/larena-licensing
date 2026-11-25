@@ -14,7 +14,7 @@ namespace Larena\Licensing\Enums;
  */
 enum DistributedCapability: string
 {
-    /** Crossing a node boundary at all. Pro. */
+    /** Crossing a node boundary at all. Paid. */
     case RemoteOperations = 'distributed.remote_operations';
 
     /** Running one installation as a cluster of admitted nodes. Enterprise. */
@@ -23,7 +23,7 @@ enum DistributedCapability: string
     public function tier(): string
     {
         return match ($this) {
-            self::RemoteOperations => 'pro',
+            self::RemoteOperations => 'paid',
             self::Cluster => 'enterprise',
         };
     }
