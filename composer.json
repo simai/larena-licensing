@@ -11,7 +11,13 @@
         }
     ],
     "require": {
-        "php": "^8.3"
+        "php": "^8.3",
+        "ext-curl": "*",
+        "ext-sodium": "*",
+        "illuminate/console": "^13.0",
+        "illuminate/contracts": "^13.0",
+        "illuminate/http": "^13.0",
+        "illuminate/support": "^13.0"
     },
     "autoload": {
         "psr-4": {
@@ -33,7 +39,8 @@
             "php tests/Unit/OperatorOverlayNarrowingTest.php",
             "php tests/Unit/NodeAdmissionTest.php",
             "php tests/Unit/DistributedCapabilityDeclarationTest.php",
-            "php tests/Unit/ScopeEntitlementFailsClosedTest.php"
+            "php tests/Unit/ScopeEntitlementFailsClosedTest.php",
+            "php tests/Unit/SiteLicensingTest.php"
         ],
         "test:unit": "php tests/Unit/CapabilityContractTest.php && php tests/Unit/LicensingFailsClosedTest.php && php tests/Unit/LicensingCapabilityDecisionRuntimeTest.php && php tests/Unit/LicensingCapabilityDecisionFailsClosedTest.php",
         "lint": "php scripts/lint.php",
@@ -54,8 +61,18 @@
     },
     "config": {
         "sort-packages": true,
-        "allow-plugins": {}
+        "allow-plugins": {},
+        "platform": {
+            "php": "8.3.31"
+        }
     },
     "minimum-stability": "stable",
-    "prefer-stable": true
+    "prefer-stable": true,
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Larena\\Licensing\\Laravel\\LicensingServiceProvider"
+            ]
+        }
+    }
 }
