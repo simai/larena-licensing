@@ -78,7 +78,8 @@
     "src/Site/TestAddresses.php",
     "src/Site/TrustedKeys.php",
     "src/Site/VerifiedSnapshot.php",
-    "scripts/analyse.php"
+    "scripts/analyse.php",
+    "scripts/check-delivery-manifest.php"
   ],
   "forbidden_files": [
     "src/Runtime/SnapshotLicensingRuntime.php",

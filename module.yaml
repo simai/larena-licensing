@@ -17,3 +17,15 @@ runtime:
   laravel: "^13.0"
 evidence:
   path: docs/project-management/evidence/minimal-cms-v1-1-batch-5-licensing-environment-solution
+delivery:
+  publisher: simai
+  distribution: open
+  license: Apache-2.0
+  requires:
+    larena: dev-main
+    packages: {}
+  capabilities:
+    - larena.capability.licensing.base
+  requires_capabilities: []
+  data_on_removal: kept
+  migrations_reversible: true
