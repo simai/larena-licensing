@@ -58,20 +58,23 @@ check($catalog->requiredFor('larena.capability.telephony.advanced_operations') =
 check($catalog->requiredFor('larena.capability.core.distributed_cluster') === [], 'the always-on core is not switched');
 check($catalog->dependantsOf('larena.capability.search.base') === [$free, 'larena.capability.docara.base'], 'what needs search');
 
-// 5. The check catches drift: a tier changed in the registry, a registry capability nobody described, missing words.
+// 5. The check catches drift: a tier changed in the registry, a registry capability with no area, missing words;
+//    a capability the registry marks planned stays out of the catalog.
 $specs = null;
 foreach ([getenv('LARENA_SPECS_ROOT') ?: '', dirname($root, 3) . '/larena-specs'] as $candidate) {
     if ($candidate !== '' && is_file($candidate . '/specs/capabilities/registry.json')) {
         $specs = $candidate;
     }
 }
-$presentation = json_decode((string) file_get_contents($root . '/resources/catalog/presentation.json'), true);
 $registry = $specs !== null ? json_decode((string) file_get_contents($specs . '/specs/capabilities/registry.json'), true)
     : ['registry_id' => (string) $shipped['source']['registry_id'], 'schema' => (string) $shipped['source']['registry_schema'],
-        'packages' => [], 'capabilities' => array_map(static fn (array $entry): array => ['id' => $entry['id'], 'package' => $entry['package'],
-            'kind' => $entry['kind'], 'default_tier' => $entry['tier'], 'trial_eligible' => $entry['trial_eligible']], $shipped['capabilities'])];
+        'areas' => $shipped['areas'], 'packages' => [], 'capabilities' => array_map(static fn (array $entry): array => ['id' => $entry['id'],
+            'package' => $entry['package'], 'kind' => $entry['kind'], 'default_tier' => $entry['tier'], 'status' => 'declared',
+            'trial_eligible' => $entry['trial_eligible'], 'area' => $entry['area'], 'needs' => $entry['requires'],
+            'always_on' => $entry['always_on']], $shipped['capabilities'])];
 if ($specs !== null) {
-    check(CapabilityCatalogBuilder::encode(CapabilityCatalogBuilder::build($registry, $presentation)) === CapabilityCatalogBuilder::encode($shipped), 'shipped catalog matches the registry');
+    check(CapabilityCatalogBuilder::encode(CapabilityCatalogBuilder::build($registry)) === CapabilityCatalogBuilder::encode($shipped), 'shipped catalog matches the registry');
+    check(CapabilityCatalogBuilder::registryErrors($registry) === [], 'the registry places every built capability');
 }
 $changed = $registry;
 foreach ($changed['capabilities'] as $index => $entry) {
@@ -79,10 +82,21 @@ foreach ($changed['capabilities'] as $index => $entry) {
         $changed['capabilities'][$index]['default_tier'] = 'free';
     }
 }
-check(CapabilityCatalogBuilder::encode(CapabilityCatalogBuilder::build($changed, $presentation)) !== CapabilityCatalogBuilder::encode($shipped), 'a tier changed in the registry is drift');
+check(CapabilityCatalogBuilder::encode(CapabilityCatalogBuilder::build($changed)) !== CapabilityCatalogBuilder::encode($shipped), 'a tier changed in the registry is drift');
 $added = $registry;
-$added['capabilities'][] = ['id' => 'larena.capability.chat.video', 'package' => 'larena/chat', 'kind' => 'extension_family', 'default_tier' => 'paid', 'trial_eligible' => false];
-check(CapabilityCatalogBuilder::presentationErrors($added, $presentation) === ['presentation_missing:larena.capability.chat.video'], 'a new registry capability must be described');
+$added['capabilities'][] = ['id' => 'larena.capability.chat.video', 'package' => 'larena/chat', 'kind' => 'extension_family', 'default_tier' => 'paid', 'status' => 'declared', 'trial_eligible' => false];
+check(CapabilityCatalogBuilder::registryErrors($added) === ['registry_capability_unplaced:larena.capability.chat.video'], 'a registry capability without an area is caught');
+$planned = $registry;
+$planned['capabilities'][] = ['id' => 'larena.capability.shop.wishlist', 'package' => 'larena/shop', 'kind' => 'extension_family', 'default_tier' => 'free', 'status' => 'planned', 'trial_eligible' => false];
+check(CapabilityCatalogBuilder::registryErrors($planned) === [], 'a planned capability needs no place yet');
+check(CapabilityCatalogBuilder::encode(CapabilityCatalogBuilder::build($planned)) === CapabilityCatalogBuilder::encode(CapabilityCatalogBuilder::build($registry)), 'a planned capability stays out of the catalog');
+$moved = $registry;
+foreach ($moved['capabilities'] as $index => $entry) {
+    if ($entry['id'] === 'larena.capability.link.base') {
+        $moved['capabilities'][$index]['needs'] = [$free];
+    }
+}
+check(CapabilityCatalogBuilder::encode(CapabilityCatalogBuilder::build($moved)) !== CapabilityCatalogBuilder::encode($shipped), 'needs changed in the registry are drift');
 $noWords = $languages;
 unset($noWords['ru']['items']['chat']);
 check(in_array('capability_words_missing:ru:' . $paid . ':title_key', CapabilityCatalogBuilder::errors($shipped, $noWords), true), 'missing words are caught');

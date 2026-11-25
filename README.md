@@ -10,8 +10,8 @@ capability catalog makes its `free` functions free for everyone, and `larena-lic
 site's own.
 
 - **Catalog.** `resources/catalog/capabilities.json` is generated from the Specs capability registry
-  (`specs/capabilities/registry.json`: id, package, tier, trial) and `resources/catalog/presentation.json` (area, what a
-  function needs, always on) by `composer run catalog:refresh`; sites have no Specs checkout. `composer run catalog:check`
+  (`specs/capabilities/registry.json`: id, package, tier, trial, area, what a function needs, always on; capabilities
+  it marks `planned` are left out) by `composer run catalog:refresh`; sites have no Specs checkout. `composer run catalog:check`
   (in the quality gate) checks it, its words in `resources/lang/{en,ru}/capabilities.php`, and that it matches a fresh
   build when Specs is found (skipped without it). `Catalog\SiteCapabilities` is the read model for screens: every
   function with its words, package, tier, trial and the site's decision (`allowed`, `development`, `needs_licence`).

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 /*
  * The capability catalog the package ships (`resources/catalog/capabilities.json`), built from the Specs capability
- * registry and `resources/catalog/presentation.json` (owner decision 2026-11-25: paid or free is catalog data).
+ * registry: tiers, trials, areas and needs all come from there (owner decision 2026-11-25: paid or free is catalog data).
  *
  *   php scripts/refresh-capability-catalog.php           write the catalog from the registry (composer run catalog:refresh)
  *   php scripts/refresh-capability-catalog.php --check   the package gate: the shipped catalog is sound, has words in every
@@ -21,7 +21,6 @@ require_once dirname(__DIR__) . '/vendor/autoload.php';
 $root = dirname(__DIR__);
 $check = in_array('--check', array_slice($argv, 1), true);
 $catalogPath = $root . '/resources/catalog/capabilities.json';
-$presentation = readJson($root . '/resources/catalog/presentation.json');
 $languages = [];
 foreach (['en', 'ru'] as $locale) {
     $path = $root . '/resources/lang/' . $locale . '/capabilities.php';
@@ -37,21 +36,18 @@ foreach ([getenv('LARENA_SPECS_ROOT') ?: '', dirname($root, 3) . '/larena-specs'
 }
 $registry = $specs === null ? null : readJson($specs . '/specs/capabilities/registry.json');
 $errors = [];
-if ($presentation === null) {
-    $errors[] = 'presentation_missing_or_unreadable';
-}
 
 if (!$check) {
-    if ($registry === null || $presentation === null) {
+    if ($registry === null) {
         fwrite(STDERR, "The Specs capability registry is needed to refresh the catalog (set LARENA_SPECS_ROOT).\n");
         exit(1);
     }
-    $missing = CapabilityCatalogBuilder::presentationErrors($registry, $presentation);
+    $missing = CapabilityCatalogBuilder::registryErrors($registry);
     if ($missing !== []) {
-        fwrite(STDERR, "Describe every registry capability in resources/catalog/presentation.json first:\n- " . implode("\n- ", $missing) . "\n");
+        fwrite(STDERR, "The Specs registry has no areas or needs for these (specs/capabilities/placement.json):\n- " . implode("\n- ", $missing) . "\n");
         exit(1);
     }
-    $catalog = CapabilityCatalogBuilder::build($registry, $presentation);
+    $catalog = CapabilityCatalogBuilder::build($registry);
     file_put_contents($catalogPath, CapabilityCatalogBuilder::encode($catalog));
     echo 'Capability catalog written: ' . count($catalog['capabilities']) . " capabilities.\n";
     exit(0);
@@ -64,10 +60,10 @@ if ($shipped === null) {
 }
 $errors = [...$errors, ...CapabilityCatalogBuilder::errors($shipped, $languages)];
 $registryCheck = 'skipped_specs_not_found';
-if ($registry !== null && $presentation !== null) {
+if ($registry !== null) {
     $registryCheck = 'passed';
-    $errors = [...$errors, ...CapabilityCatalogBuilder::presentationErrors($registry, $presentation)];
-    if (CapabilityCatalogBuilder::encode(CapabilityCatalogBuilder::build($registry, $presentation)) !== CapabilityCatalogBuilder::encode($shipped)) {
+    $errors = [...$errors, ...CapabilityCatalogBuilder::registryErrors($registry)];
+    if (CapabilityCatalogBuilder::encode(CapabilityCatalogBuilder::build($registry)) !== CapabilityCatalogBuilder::encode($shipped)) {
         $errors[] = 'catalog_differs_from_registry:run composer run catalog:refresh';
         $registryCheck = 'failed';
     }

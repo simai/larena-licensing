@@ -7,6 +7,7 @@ declare(strict_types=1);
 return [
     'areas' => [
         'site' => 'Site and content',
+        'shop' => 'Shop',
         'data' => 'Data',
         'communication' => 'Communication',
         'automation' => 'Automation',
