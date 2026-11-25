@@ -5,8 +5,16 @@ Runtime licensing layer that decides which package, bundle and capability featur
 ## The site's licence (owner decisions 2026-11-25)
 
 Code asks for a right to a function, `SiteLicensing::allows('telephony.ai_voice')` (or the `LicensingRuntime`
-contract), never for a plan. Paid or free is catalog data: the signed snapshot lists what the site has, and
-`larena-licensing.free_capabilities` lists what is free for everyone.
+contract), never for a plan. Paid or free is catalog data: the signed snapshot lists what the site has, the shipped
+capability catalog makes its `free` functions free for everyone, and `larena-licensing.free_capabilities` adds the
+site's own.
+
+- **Catalog.** `resources/catalog/capabilities.json` is generated from the Specs capability registry
+  (`specs/capabilities/registry.json`: id, package, tier, trial) and `resources/catalog/presentation.json` (area, what a
+  function needs, always on) by `composer run catalog:refresh`; sites have no Specs checkout. `composer run catalog:check`
+  (in the quality gate) checks it, its words in `resources/lang/{en,ru}/capabilities.php`, and that it matches a fresh
+  build when Specs is found (skipped without it). `Catalog\SiteCapabilities` is the read model for screens: every
+  function with its words, package, tier, trial and the site's decision (`allowed`, `development`, `needs_licence`).
 
 - **Snapshot.** The registration server's envelope `{"entitlement": "<exact bytes>", "signature": "{\"key_id\",\"signature\"}"}`,
   Ed25519 over the exact bytes; the update server hands the same envelope to the site at `GET <source>/entitlement`.

@@ -40,7 +40,8 @@
             "php tests/Unit/NodeAdmissionTest.php",
             "php tests/Unit/DistributedCapabilityDeclarationTest.php",
             "php tests/Unit/ScopeEntitlementFailsClosedTest.php",
-            "php tests/Unit/SiteLicensingTest.php"
+            "php tests/Unit/SiteLicensingTest.php",
+            "php tests/Unit/CapabilityCatalogTest.php"
         ],
         "test:unit": "php tests/Unit/CapabilityContractTest.php && php tests/Unit/LicensingFailsClosedTest.php && php tests/Unit/LicensingCapabilityDecisionRuntimeTest.php && php tests/Unit/LicensingCapabilityDecisionFailsClosedTest.php",
         "lint": "php scripts/lint.php",
@@ -51,6 +52,7 @@
         "quality:gate": [
             "@validate:larena",
             "@delivery:check",
+            "@catalog:check",
             "@lint",
             "@analyse",
             "@test",
@@ -59,7 +61,9 @@
             "@scope:check"
         ],
         "larena:metadata:check": "php scripts/check-metadata-sync.php",
-        "delivery:check": "@php scripts/check-delivery-manifest.php"
+        "delivery:check": "@php scripts/check-delivery-manifest.php",
+        "catalog:refresh": "@php scripts/refresh-capability-catalog.php",
+        "catalog:check": "@php scripts/refresh-capability-catalog.php --check"
     },
     "config": {
         "sort-packages": true,

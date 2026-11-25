@@ -7,6 +7,8 @@ namespace Larena\Licensing\Laravel;
 use Illuminate\Contracts\Config\Repository as ConfigRepository;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Support\ServiceProvider;
+use Larena\Licensing\Catalog\CapabilityCatalog;
+use Larena\Licensing\Catalog\SiteCapabilities;
 use Larena\Licensing\Contracts\LicensingRuntime;
 use Larena\Licensing\Laravel\Console\LicensingLoadCommand;
 use Larena\Licensing\Laravel\Console\LicensingRefreshCommand;
@@ -23,7 +25,8 @@ use Larena\Licensing\Site\TrustedKeys;
 
 /**
  * Licensing in a Larena site (owner decisions 2026-11-25): configuration `larena-licensing`, the site's signed
- * snapshot as the default {@see LicensingRuntime} and as {@see SiteLicensing}, the commands
+ * snapshot as the default {@see LicensingRuntime} and as {@see SiteLicensing}, the shipped capability catalog and its
+ * read model {@see SiteCapabilities}, the commands
  * `larena:licensing:refresh|load|status`, a daily refresh through the scheduler, and the licence in the admin's
  * alert bar where the admin has one. No table, no route, nothing on the public site.
  */
@@ -54,6 +57,8 @@ final class LicensingServiceProvider extends ServiceProvider
             return new FileSnapshotStore(is_string($path) && $path !== '' ? $path : $app->storagePath('app/larena/licensing/snapshot.json'));
         });
         $this->app->singletonIf(DevelopmentAccess::class, static fn (): DevelopmentAccess => new TestAddresses());
+        // The capability catalog the package ships (generated from the Specs registry): its free functions are free.
+        $this->app->singletonIf(CapabilityCatalog::class, static fn (): CapabilityCatalog => CapabilityCatalog::shipped());
         $this->app->singleton(SiteLicensing::class, static function (Application $app): SiteLicensing {
             $config = $app->make(ConfigRepository::class);
             $free = $config->get('larena-licensing.free_capabilities', []);
@@ -63,9 +68,15 @@ final class LicensingServiceProvider extends ServiceProvider
                 $app->make(SnapshotStore::class),
                 $app->make(DevelopmentAccess::class),
                 self::siteHost($config),
-                array_values(array_filter(is_array($free) ? $free : [], 'is_string')),
+                array_values(array_unique([
+                    ...$app->make(CapabilityCatalog::class)->freeIds(),
+                    ...array_values(array_filter(is_array($free) ? $free : [], 'is_string')),
+                ])),
             );
         });
+        // Every function of the catalog with the site's decision for it, for screens («Возможности сайта»).
+        $this->app->singleton(SiteCapabilities::class, static fn (Application $app): SiteCapabilities
+            => new SiteCapabilities($app->make(CapabilityCatalog::class), $app->make(SiteLicensing::class)));
         // The default answer of every LicensingRuntime caller: the site's signed snapshot. A site may bind its own.
         $this->app->singletonIf(LicensingRuntime::class, static fn (Application $app): LicensingRuntime => new SiteLicensingRuntime($app->make(SiteLicensing::class)));
         $this->app->bind(SnapshotSource::class, static function (Application $app): SnapshotSource {

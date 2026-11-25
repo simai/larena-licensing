@@ -79,7 +79,17 @@
     "src/Site/TrustedKeys.php",
     "src/Site/VerifiedSnapshot.php",
     "scripts/analyse.php",
-    "scripts/check-delivery-manifest.php"
+    "scripts/check-delivery-manifest.php",
+    "resources/catalog/capabilities.json",
+    "resources/catalog/presentation.json",
+    "resources/lang/ru/capabilities.php",
+    "resources/lang/en/capabilities.php",
+    "scripts/refresh-capability-catalog.php",
+    "src/Catalog/CapabilityCatalog.php",
+    "src/Catalog/CapabilityCatalogBuilder.php",
+    "src/Catalog/CatalogCapability.php",
+    "src/Catalog/SiteCapabilities.php",
+    "tests/Unit/CapabilityCatalogTest.php"
   ],
   "forbidden_files": [
     "src/Runtime/SnapshotLicensingRuntime.php",

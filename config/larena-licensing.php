@@ -20,8 +20,9 @@ return [
     // Key ids no longer trusted even when listed (the update client's revoked ids count too).
     'revoked_key_ids' => array_values(array_filter(array_map('trim', explode(',', (string) env('LARENA_LICENSING_REVOKED_KEY_IDS', ''))))),
 
-    // Catalog data: capabilities free for every site, without a snapshot. Making a function free is moving its
-    // right here (or into the free part of the catalog), not changing code.
+    // Catalog data: the shipped catalog (resources/catalog/capabilities.json, from the Specs registry) makes every
+    // `free` capability free for every site, without a snapshot. This list is the site's own addition to it: making a
+    // function free is data here or in the registry, not code. Paid, trial and enterprise ones need the snapshot.
     'free_capabilities' => [],
 
     // The kept snapshot; empty: storage/app/larena/licensing/snapshot.json (outside the web root, shared by releases).

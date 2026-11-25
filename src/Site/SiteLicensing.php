@@ -11,7 +11,7 @@ use DateTimeZone;
 /**
  * The site's one answer to «may this run?» (owner decisions 2026-11-25): code asks for a right to a function,
  * `allows('telephony.ai_voice')`, never for a plan. Paid or free is catalog data: the signed snapshot lists what the
- * site has, the configuration may list capabilities free for everyone.
+ * site has; the shipped catalog makes its `free` capabilities free for everyone, and the configuration may add more.
  *
  * - a test address ({@see DevelopmentAccess}) → allowed, state `development`;
  * - a capability the catalog makes free → allowed;
@@ -50,6 +50,12 @@ final class SiteLicensing
     public function allows(string $capability): bool
     {
         return $this->decide($capability)->allowed;
+    }
+
+    /** Whether the catalog (or the site's configuration) makes the capability free for every site. */
+    public function isFree(string $capability): bool
+    {
+        return in_array($capability, $this->freeCapabilities, true);
     }
 
     public function decide(string $capability): SiteLicenseDecision
