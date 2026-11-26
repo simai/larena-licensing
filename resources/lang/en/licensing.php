@@ -45,6 +45,22 @@ return [
             'invalid' => 'The licence snapshot was not accepted',
             'development' => 'Development copy',
         ],
+        // Why a snapshot was refused (SnapshotRefused), said after «Лицензия не принята:».
+        'details' => [
+            'licensing_key_revoked' => 'the signing key is revoked',
+            'licensing_key_unknown' => 'signed with an unknown key',
+            'licensing_signature_invalid' => 'the signature does not match',
+            'licensing_signature_malformed' => 'this is not a licence file or it is damaged',
+            'licensing_snapshot_from_future' => 'its issue date has not come yet, check the server clock',
+            'licensing_snapshot_malformed' => 'the licence file is damaged',
+            'licensing_snapshot_not_bound' => 'the licence is not for this site address',
+            'licensing_snapshot_older_than_kept' => 'the site already has a newer licence',
+            'licensing_snapshot_other_product' => 'the licence is for another product',
+            'licensing_snapshot_other_site' => 'the licence is for another site',
+            'licensing_snapshot_unsupported' => 'the site does not know this licence format yet, update the site',
+            'licensing_store_unreadable' => 'the kept licence could not be read',
+            'licensing_store_unwritable' => 'the licence could not be kept: storage is not writable',
+        ],
         'reasons' => [
             'licence_refreshed' => 'The licence is refreshed.',
             'licence_loaded' => 'The licence file is loaded.',
