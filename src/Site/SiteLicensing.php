@@ -153,7 +153,9 @@ final class SiteLicensing
     /**
      * Takes a snapshot from the server (`refresh`) or a file (`file`) after checking it: signature, key, format,
      * product, not issued in the future, this site's address when it names addresses (a file must name it), and
-     * not older than the snapshot already kept. Returns it; the kept one stays when it is refused.
+     * not older than the snapshot already kept for the same site id (after the site key moved to another site the new
+     * site's snapshot is taken even when the old one was issued later). Returns it; the kept one stays when it is
+     * refused.
      */
     public function accept(string $envelopeJson, string $origin): VerifiedSnapshot
     {
@@ -161,8 +163,10 @@ final class SiteLicensing
         $envelope = SnapshotVerifier::envelope($envelopeJson);
         $snapshot = $this->verifier->verify($envelope, $now);
         $this->checkSite($snapshot, $origin);
+        // Anti-rollback holds for the same site: a snapshot of another site id (the site key was changed to another
+        // site's) is not compared with the one it replaces; its own address check above still binds it.
         $kept = $this->keptVerified();
-        if ($kept !== null && $snapshot->issuedAt < $kept->issuedAt) {
+        if ($kept !== null && $kept->site === $snapshot->site && $snapshot->issuedAt < $kept->issuedAt) {
             throw new SnapshotRefused('licensing_snapshot_older_than_kept');
         }
         $this->store->keep($envelope, $origin, $now);

@@ -109,6 +109,13 @@ $fx->site($seenStore, now: '2026-12-30T00:00:00+00:00')->markSeen();
 $rewound = $fx->site($seenStore, now: '2026-11-26T00:00:00+00:00');
 check($rewound->status()->state === LicensingState::Stale && $rewound->status()->reasonCode === 'snapshot_not_refreshed', 'clock back after a later visit: still past 30 days');
 check(refusal(static fn () => $fx->site($store)->accept($fx->envelope($key, ['issued_at' => '2026-11-24T10:00:00+00:00']), SnapshotStore::REFRESH)) === 'licensing_snapshot_older_than_kept', 'an older snapshot than the kept one is refused');
+// The site key moved to another site: that site's snapshot is taken though the kept one (of the old site) is newer;
+// back on the first site, the comparison holds for it again.
+$moved = $fx->folder() . '/moved.json';
+$fx->site($moved)->accept($fx->envelope($key, ['issued_at' => '2026-11-25T11:00:00+00:00']), SnapshotStore::REFRESH);
+check(refusal(static fn () => $fx->site($moved)->accept($fx->envelope($key, ['site' => 'site_00000000000000bb', 'issued_at' => '2026-11-25T09:00:00+00:00']), SnapshotStore::REFRESH)) === null, 'another site id: the older snapshot is taken');
+check($fx->site($moved)->status()->snapshot?->site === 'site_00000000000000bb', 'the new site is kept');
+check(refusal(static fn () => $fx->site($moved)->accept($fx->envelope($key, ['site' => 'site_00000000000000bb', 'issued_at' => '2026-11-25T08:00:00+00:00']), SnapshotStore::REFRESH)) === 'licensing_snapshot_older_than_kept', 'the same site again: an older snapshot is still refused');
 
 // Every test address gets every capability without a snapshot; a production address does not.
 foreach (['localhost', '127.0.0.1', '::1', '[::1]', 'larena.localhost', 'larena.test', 'shop.local', 'dev.example.com', 'staging.example.com', 'demo.larena.dev', 'LARENA.TEST.'] as $host) {
