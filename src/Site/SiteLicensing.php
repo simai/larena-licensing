@@ -73,6 +73,15 @@ final class SiteLicensing
         if (!in_array($capability, $status->snapshot->capabilities, true)) {
             return new SiteLicenseDecision($capability, false, 'capability_not_entitled', $status->state);
         }
+        // A capability held only by a running trial closes at that trial's end, as a revoked licence does: the admin
+        // stops offering it, the public site is never touched. The clock cannot be set back past the snapshot's issue.
+        $trialEnd = $status->snapshot->trialEnd($capability);
+        if ($trialEnd !== null) {
+            $now = max($this->now(), $status->snapshot->issuedAt);
+            if ($now > $trialEnd) {
+                return new SiteLicenseDecision($capability, false, 'trial_ended', $status->state);
+            }
+        }
 
         return new SiteLicenseDecision($capability, true, $status->reasonCode, $status->state);
     }

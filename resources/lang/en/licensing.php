@@ -32,6 +32,7 @@ return [
             'trial_request_failed' => 'Could not reach the update server. Try again later.',
             'trial_answer_refused' => 'The answer did not pass the signature check and was not kept. Nothing changed.',
             'trial_not_granted' => 'The server answered without this function: the trial did not start.',
+            'trial_ended' => 'The free trial of this function has ended. It is closed and its data is kept; a licence switches it on again.',
         ],
     ],
 ];

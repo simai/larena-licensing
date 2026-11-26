@@ -189,6 +189,11 @@ check($kept->trialUntil() === null, 'an active licence with no capability named 
 $entry = (new SiteCapabilities($catalog, $kept))->get($chat);
 check($entry !== null && $entry['decision'] === SiteCapabilities::ALLOWED && $entry['trial_until'] === $exactEnd, 'trials{} present: the screen shows the exact date, not fresh_until');
 check($entry['trial_days'] === 14, 'the read model carries the catalog trial length');
+// At the trial end a capability held only by the trial closes, as a revoked licence does; before it, it stays open.
+check($fx->site($store, now: '2026-12-09T23:00:00+00:00', free: $catalog->freeIds())->allows($chat), 'before the trial end the trial capability is open');
+$afterEnd = $fx->site($store, now: '2026-12-10T00:00:01+00:00', free: $catalog->freeIds())->decide($chat);
+check(!$afterEnd->allowed && $afterEnd->reasonCode === 'trial_ended', 'after the trial end it closes with trial_ended');
+check($fx->site($store, now: '2026-12-10T00:00:01+00:00', free: $catalog->freeIds())->allows('update.install') === in_array('update.install', $kept->status()->snapshot->capabilities, true), 'capabilities outside trials{} are not touched by the trial end');
 // Without trials{} the fallback stays: a trial licence's fresh_until.
 $store = $fx->folder() . '/snapshot.json';
 [$trial] = $trialFor($store);
