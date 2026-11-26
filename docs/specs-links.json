@@ -1,0 +1,18 @@
+{
+  "schema": "larena.specs_links",
+  "schema_version": 1,
+  "repository": "simai/larena-licensing",
+  "specs_repo": "simai/larena-specs",
+  "specs_commit": "68eda421a7a60aeaad949bac9ef9e261b374aa04",
+  "links": [
+    { "path": "docs/architecture/larena-licensing-updates-purchase.md", "anchor": "principles", "why": "Code asks for a right to a function, never for a plan; paid or free is catalog data." },
+    { "path": "docs/architecture/larena-licensing-updates-purchase.md", "anchor": "vocabulary", "why": "The words this package uses: right, snapshot, licence, addon, trial, updates until." },
+    { "path": "docs/architecture/larena-licensing-updates-purchase.md", "anchor": "rights-model", "why": "The site decides its rights from the signed entitlement snapshot; the states and offline work this package implements." },
+    { "path": "docs/architecture/larena-licensing-updates-purchase.md", "anchor": "licence-end", "why": "Licence end (variant C), revocation and trial end: what stays open and what closes." },
+    { "path": "docs/architecture/larena-licensing-updates-purchase.md", "anchor": "test-addresses", "why": "Which addresses are free development copies." },
+    { "path": "docs/architecture/larena-licensing-updates-purchase.md", "anchor": "developer-key", "why": "The developer key for partners and its place in code (DevelopmentAccess)." },
+    { "path": "docs/architecture/larena-licensing-updates-purchase.md", "anchor": "trial", "why": "The 14-day trial: who may have one and how its end is decided." },
+    { "path": "docs/architecture/larena-licensing-updates-purchase.md", "anchor": "purchase", "why": "Buying outside (shop, CRM, invoice), licence issue and coupons: the admin's «Купить» and coupon entry." },
+    { "path": "docs/standards/package-repository-structure.md", "anchor": "specs-links", "why": "The documentation rule this file follows and the check in the gate." }
+  ]
+}

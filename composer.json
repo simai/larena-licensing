@@ -42,7 +42,9 @@
             "php tests/Unit/ScopeEntitlementFailsClosedTest.php",
             "php tests/Unit/SiteLicensingTest.php",
             "php tests/Unit/CapabilityCatalogTest.php",
-            "php tests/Unit/SiteTrialTest.php"
+            "php tests/Unit/SiteTrialTest.php",
+            "php tests/Unit/SiteLicenceSectionTest.php",
+            "php tests/Unit/SpecsLinksCheckTest.php"
         ],
         "test:unit": "php tests/Unit/CapabilityContractTest.php && php tests/Unit/LicensingFailsClosedTest.php && php tests/Unit/LicensingCapabilityDecisionRuntimeTest.php && php tests/Unit/LicensingCapabilityDecisionFailsClosedTest.php",
         "lint": "php scripts/lint.php",
@@ -59,10 +61,12 @@
             "@test",
             "@larena:metadata:check",
             "@evidence:check",
-            "@scope:check"
+            "@scope:check",
+            "@specs-links:check"
         ],
         "larena:metadata:check": "php scripts/check-metadata-sync.php",
         "delivery:check": "@php scripts/check-delivery-manifest.php",
+        "specs-links:check": "@php scripts/check-specs-links.php",
         "catalog:refresh": "@php scripts/refresh-capability-catalog.php",
         "catalog:check": "@php scripts/refresh-capability-catalog.php --check"
     },
