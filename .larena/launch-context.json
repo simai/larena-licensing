@@ -89,7 +89,12 @@
     "src/Catalog/CapabilityCatalogBuilder.php",
     "src/Catalog/CatalogCapability.php",
     "src/Catalog/SiteCapabilities.php",
-    "tests/Unit/CapabilityCatalogTest.php"
+    "tests/Unit/CapabilityCatalogTest.php",
+    "src/Site/SiteTrial.php",
+    "src/Site/TrialResult.php",
+    "src/Site/TrialRefused.php",
+    "src/Laravel/Console/LicensingTrialCommand.php",
+    "tests/Unit/SiteTrialTest.php"
   ],
   "forbidden_files": [
     "src/Runtime/SnapshotLicensingRuntime.php",

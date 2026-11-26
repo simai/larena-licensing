@@ -109,6 +109,20 @@ final class SiteLicensing
         return $status->capabilitiesCount() ? $status->snapshot?->updatesUntil($package) : null;
     }
 
+    /**
+     * When the site's trial ends: the kept snapshot's `fresh_until` (Larena Server keeps it within the trial end) while
+     * the licence status is `trial` and the snapshot counts. Null without a trial.
+     */
+    public function trialUntil(): ?DateTimeImmutable
+    {
+        $status = $this->status();
+        if (!$status->capabilitiesCount() || $status->snapshot === null || $status->snapshot->licenceStatus !== 'trial') {
+            return null;
+        }
+
+        return $status->snapshot->declaredFreshUntil ?? $status->snapshot->freshUntil();
+    }
+
     public function status(): SiteLicenseStatus
     {
         if ($this->status === null || time() - $this->evaluatedAt > self::REREAD_SECONDS) {

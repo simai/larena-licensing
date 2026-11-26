@@ -32,7 +32,12 @@ site's own.
 - **Store.** One file, `storage/app/larena/licensing/snapshot.json`; no table, no migration.
 - **Commands.** `larena:licensing:refresh` (daily through the scheduler while the site has a site key; the update
   client's sources, site key and timeouts), `larena:licensing:load <file>` (sites without network; the file must name
-  the site's address), `larena:licensing:status`. They print codes only, never a key.
+  the site's address), `larena:licensing:status`, `larena:licensing:trial <capability>`. They print codes only, never a key.
+- **Trial («Попробовать бесплатно»).** `SiteTrial::request($capability)` sends `POST <source>/trial` with the refresh's
+  sources and site key and JSON `{"capability": "<id>"}`, verifies the answer exactly like a refresh and keeps it only
+  when it verifies. Only for a paid function the catalog marks `trial_eligible`; others, a test address (no trial
+  needed) and a site without a key are answered without a request. Every reason has words in ru and en
+  (`larena-licensing::licensing.trial.reasons.*`). The admin's «Возможности сайта» and the installer call it.
 - **Admin.** The state goes to the admin's alert bar (`larena/licensing`); the public site never changes.
 
 Canonical specifications are in `simai/larena-specs`.

@@ -13,10 +13,12 @@ use Larena\Licensing\Contracts\LicensingRuntime;
 use Larena\Licensing\Laravel\Console\LicensingLoadCommand;
 use Larena\Licensing\Laravel\Console\LicensingRefreshCommand;
 use Larena\Licensing\Laravel\Console\LicensingStatusCommand;
+use Larena\Licensing\Laravel\Console\LicensingTrialCommand;
 use Larena\Licensing\Site\DevelopmentAccess;
 use Larena\Licensing\Site\FileSnapshotStore;
 use Larena\Licensing\Site\SiteLicensing;
 use Larena\Licensing\Site\SiteLicensingRuntime;
+use Larena\Licensing\Site\SiteTrial;
 use Larena\Licensing\Site\SnapshotSource;
 use Larena\Licensing\Site\SnapshotStore;
 use Larena\Licensing\Site\SnapshotVerifier;
@@ -27,7 +29,7 @@ use Larena\Licensing\Site\TrustedKeys;
  * Licensing in a Larena site (owner decisions 2026-11-25): configuration `larena-licensing`, the site's signed
  * snapshot as the default {@see LicensingRuntime} and as {@see SiteLicensing}, the shipped capability catalog and its
  * read model {@see SiteCapabilities}, the commands
- * `larena:licensing:refresh|load|status`, a daily refresh through the scheduler, and the licence in the admin's
+ * `larena:licensing:refresh|load|status|trial`, «Попробовать бесплатно» ({@see SiteTrial}), a daily refresh through the scheduler, and the licence in the admin's
  * alert bar where the admin has one. No table, no route, nothing on the public site.
  */
 final class LicensingServiceProvider extends ServiceProvider
@@ -94,6 +96,13 @@ final class LicensingServiceProvider extends ServiceProvider
             );
         });
 
+        // «Попробовать бесплатно»: the same sources, settings and site key as the refresh; the admin calls it too.
+        $this->app->bind(SiteTrial::class, static fn (Application $app): SiteTrial => new SiteTrial(
+            $app->make(SiteLicensing::class),
+            $app->make(CapabilityCatalog::class),
+            static fn (): SnapshotSource => $app->make(SnapshotSource::class),
+        ));
+
         // The licence in the admin's alert bar, where the admin has one (owner decision 2026-11-05).
         if (interface_exists(\Larena\Admin\Contracts\AdminAlertSource::class) && class_exists(\Larena\Admin\Alerts\AdminAlerts::class)) {
             $app = $this->app;
@@ -124,7 +133,7 @@ final class LicensingServiceProvider extends ServiceProvider
         $this->publishes([__DIR__ . '/../../config/larena-licensing.php' => $this->app->configPath('larena-licensing.php')], 'larena-licensing-config');
 
         if ($this->app->runningInConsole()) {
-            $this->commands([LicensingRefreshCommand::class, LicensingLoadCommand::class, LicensingStatusCommand::class]);
+            $this->commands([LicensingRefreshCommand::class, LicensingLoadCommand::class, LicensingStatusCommand::class, LicensingTrialCommand::class]);
         }
 
         // A daily refresh while the site has a site key; without one there is nothing to ask.

@@ -41,7 +41,8 @@
             "php tests/Unit/DistributedCapabilityDeclarationTest.php",
             "php tests/Unit/ScopeEntitlementFailsClosedTest.php",
             "php tests/Unit/SiteLicensingTest.php",
-            "php tests/Unit/CapabilityCatalogTest.php"
+            "php tests/Unit/CapabilityCatalogTest.php",
+            "php tests/Unit/SiteTrialTest.php"
         ],
         "test:unit": "php tests/Unit/CapabilityContractTest.php && php tests/Unit/LicensingFailsClosedTest.php && php tests/Unit/LicensingCapabilityDecisionRuntimeTest.php && php tests/Unit/LicensingCapabilityDecisionFailsClosedTest.php",
         "lint": "php scripts/lint.php",
