@@ -115,6 +115,7 @@ final readonly class SnapshotVerifier
         $issuedAt = self::date($data['issued_at']);
         $validUntil = self::date($data['valid_until']);
         $freshUntil = isset($data['fresh_until']) ? self::date($data['fresh_until']) : null;
+        $licenceUntil = isset($data['licence_until']) ? self::date($data['licence_until']) : null;
         if ($validUntil < $issuedAt || ($freshUntil !== null && $freshUntil < $issuedAt)) {
             throw new SnapshotRefused('licensing_snapshot_malformed');
         }
@@ -136,6 +137,7 @@ final readonly class SnapshotVerifier
             self::updatesUntil($data['updates_until'] ?? null),
             $envelope['signature'],
             self::trials($data['trials'] ?? null, $capabilities, $issuedAt),
+            $licenceUntil,
         );
     }
 

@@ -94,7 +94,17 @@
     "src/Site/TrialResult.php",
     "src/Site/TrialRefused.php",
     "src/Laravel/Console/LicensingTrialCommand.php",
-    "tests/Unit/SiteTrialTest.php"
+    "tests/Unit/SiteTrialTest.php",
+    "docs/specs-links.json",
+    "scripts/check-specs-links.php",
+    "src/Site/CouponRefused.php",
+    "src/Site/LicenceActionResult.php",
+    "src/Site/SiteAddons.php",
+    "src/Site/SiteCoupon.php",
+    "src/Site/SiteKeyStore.php",
+    "src/Site/SiteLicence.php",
+    "tests/Unit/SiteLicenceSectionTest.php",
+    "tests/Unit/SpecsLinksCheckTest.php"
   ],
   "forbidden_files": [
     "src/Runtime/SnapshotLicensingRuntime.php",

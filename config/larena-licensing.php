@@ -28,6 +28,16 @@ return [
     // The kept snapshot; empty: storage/app/larena/licensing/snapshot.json (outside the web root, shared by releases).
     'snapshot_path' => env('LARENA_LICENSING_SNAPSHOT_PATH'),
 
+    // The site key entered in the admin («Лицензия и обновления»); empty: storage/app/larena/licensing/site-key (0600).
+    // LARENA_UPDATE_SITE_KEY in `.env` stands over it.
+    'site_key_path' => env('LARENA_LICENSING_SITE_KEY_PATH'),
+
+    // The addon list kept from Larena Server's `GET <source>/addons`; empty: storage/app/larena/licensing/addons.json.
+    'addons_path' => env('LARENA_LICENSING_ADDONS_PATH'),
+
+    // «Купить» when an addon names no shop page of its own: the external shop's address (https), or empty for coupons only.
+    'shop_url' => env('LARENA_LICENSING_SHOP_URL'),
+
     // The site's own address the test-address rule and the snapshot's `site_hosts` read; empty: app.url (APP_URL).
     'site_url' => env('LARENA_LICENSING_SITE_URL'),
 

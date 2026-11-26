@@ -13,7 +13,9 @@ use RuntimeException;
  * asks the registration server and returns its signed envelope as is.
  *
  * A trial («Попробовать бесплатно») goes the same way: `POST <source>/trial` with JSON `{"capability": "<id>"}`; the
- * answer is the same signed envelope, or `{"error": "<code>"}` ({@see trial()}).
+ * answer is the same signed envelope, or `{"error": "<code>"}` ({@see trial()}); a coupon the same way, `POST
+ * <source>/coupon` with `{"code": "<coupon>"}` ({@see redeem()}); the addons on sale with `GET <source>/addons`
+ * ({@see addons()}).
  *
  * The site key never goes into an address, a reason or an error. Failures are a RuntimeException with a stable code:
  * `licensing_site_key_missing`, `licensing_source_missing`, `licensing_refresh_refused` (401/403),
@@ -83,27 +85,82 @@ final readonly class SnapshotSource
      */
     public function trial(string $capability): string
     {
+        return $this->post('/trial', ['capability' => $capability], SiteTrial::SERVER_REFUSALS,
+            static fn (string $code): \RuntimeException => new TrialRefused($code), 'trial_request_failed');
+    }
+
+    /**
+     * Redeems a coupon for this site (Larena Server's shape of 2026-11-26, «Лицензия и обновления» → «Дополнения»):
+     * `POST <source>/coupon`, the site key as for the snapshot, JSON `{"code": "<coupon>"}`. The answer is the same signed
+     * envelope as `/entitlement`, now with what the coupon gave, plus an unsigned `coupon` note; a refusal the server
+     * names ({@see SiteCoupon::SERVER_REFUSALS}) is a {@see CouponRefused} at once. A network failure or an unnamed answer
+     * tries the next source; when none answers, a RuntimeException `coupon_request_failed` (or `licensing_source_missing`,
+     * `licensing_site_key_missing`).
+     */
+    public function redeem(#[\SensitiveParameter] string $coupon): string
+    {
+        return $this->post('/coupon', ['code' => $coupon], SiteCoupon::SERVER_REFUSALS,
+            static fn (string $code): \RuntimeException => new CouponRefused($code), 'coupon_request_failed');
+    }
+
+    /**
+     * The addons the server offers this site (`GET <source>/addons`, the site key as for the snapshot): the body of the
+     * first 2xx answer, a `larena.addon-list` that {@see AddonList::parse()} reads. Not signed: a display list only.
+     * Failures: `addons_request_failed`, `licensing_source_missing`, `licensing_site_key_missing`.
+     */
+    public function addons(): string
+    {
         if ($this->siteKey === null) {
             throw new RuntimeException('licensing_site_key_missing');
         }
-        $body = json_encode(['capability' => $capability], JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES);
         $failure = null;
         foreach ($this->servers() as $source) {
             try {
-                [$status, $answer] = ($this->get)($source . '/trial', ['Authorization' => 'Bearer ' . $this->siteKey, 'Content-Type' => 'application/json'],
+                [$status, $body] = ($this->get)($source . '/addons', ['Authorization' => 'Bearer ' . $this->siteKey],
+                    min(60, max(1, $this->timeoutSeconds)), max(1, $this->connectTimeoutSeconds), SnapshotVerifier::MAX_BYTES);
+            } catch (\Throwable) {
+                $failure = 'addons_request_failed';
+                continue;
+            }
+            if ($status >= 200 && $status < 300) {
+                return $body;
+            }
+            $failure = 'addons_request_failed';
+        }
+
+        throw new RuntimeException($failure ?? 'licensing_source_missing');
+    }
+
+    /**
+     * One JSON POST to each update server in turn until one answers 2xx (its body returned) or names a refusal.
+     *
+     * @param array<string, string>                 $payload
+     * @param list<string>                          $refusals the codes the server may name instead of a snapshot
+     * @param \Closure(string): \RuntimeException  $refused
+     */
+    private function post(string $path, array $payload, array $refusals, \Closure $refused, string $failed): string
+    {
+        if ($this->siteKey === null) {
+            throw new RuntimeException('licensing_site_key_missing');
+        }
+        $body = json_encode($payload, JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES);
+        $failure = null;
+        foreach ($this->servers() as $source) {
+            try {
+                [$status, $answer] = ($this->get)($source . $path, ['Authorization' => 'Bearer ' . $this->siteKey, 'Content-Type' => 'application/json'],
                     min(60, max(1, $this->timeoutSeconds)), max(1, $this->connectTimeoutSeconds), SnapshotVerifier::MAX_BYTES, $body);
             } catch (\Throwable) {
-                $failure = 'trial_request_failed';
+                $failure = $failed;
                 continue;
             }
             if ($status >= 200 && $status < 300) {
                 return $answer;
             }
             $code = self::errorCode($answer);
-            if ($code !== null && in_array($code, SiteTrial::SERVER_REFUSALS, true)) {
-                throw new TrialRefused($code);
+            if ($code !== null && in_array($code, $refusals, true)) {
+                throw $refused($code);
             }
-            $failure = 'trial_request_failed';
+            $failure = $failed;
         }
 
         throw new RuntimeException($failure ?? 'licensing_source_missing');
