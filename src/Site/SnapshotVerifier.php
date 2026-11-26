@@ -15,8 +15,9 @@ use JsonException;
  * Ed25519 over the exact entitlement bytes, by a key of {@see TrustedKeys}; a revoked id wins.
  *
  * The entitlement is `larena.entitlement` schema_version 1: `snapshot_key`, `site`, `product`, `status`,
- * `capabilities`, `issued_at`, `valid_until`, and optionally `site_hosts`, `updates_until` and `fresh_until` (the site
- * fields; see the package README). Any other shape is refused. Every refusal is a {@see SnapshotRefused} with a
+ * `capabilities`, `issued_at`, `valid_until`, and optionally `site_hosts`, `updates_until`, `fresh_until` and `trials`
+ * (the site fields; see the package README). `trials` is `{"<capability>": "<ATOM end>"}` for the capabilities held
+ * only by a running trial; each must be listed in `capabilities` and end no earlier than the issue date. Any other shape is refused. Every refusal is a {@see SnapshotRefused} with a
  * stable code; nothing of the snapshot or the signature goes into it.
  */
 final readonly class SnapshotVerifier
@@ -134,6 +135,7 @@ final readonly class SnapshotVerifier
             self::hosts($data['site_hosts'] ?? null, array_key_exists('site_hosts', $data)),
             self::updatesUntil($data['updates_until'] ?? null),
             $envelope['signature'],
+            self::trials($data['trials'] ?? null, $capabilities, $issuedAt),
         );
     }
 
@@ -186,6 +188,36 @@ final readonly class SnapshotVerifier
         }
 
         return $until;
+    }
+
+    /**
+     * The `trials` field: capability => end of its running trial. Absent or null: no trial is named.
+     *
+     * @param list<mixed> $capabilities
+     * @return array<string,DateTimeImmutable>
+     */
+    private static function trials(mixed $value, array $capabilities, DateTimeImmutable $issuedAt): array
+    {
+        if ($value === null) {
+            return [];
+        }
+        if (!is_array($value) || ($value !== [] && array_is_list($value))) {
+            throw new SnapshotRefused('licensing_snapshot_malformed');
+        }
+        $trials = [];
+        foreach ($value as $capability => $date) {
+            if (!is_string($capability) || preg_match(self::CAPABILITY, $capability) !== 1 || !is_string($date)
+                || !in_array($capability, $capabilities, true)) {
+                throw new SnapshotRefused('licensing_snapshot_malformed');
+            }
+            $end = self::date($date);
+            if ($end < $issuedAt) {
+                throw new SnapshotRefused('licensing_snapshot_malformed');
+            }
+            $trials[$capability] = $end;
+        }
+
+        return $trials;
     }
 
     private static function date(mixed $value): DateTimeImmutable

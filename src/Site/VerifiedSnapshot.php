@@ -10,7 +10,8 @@ use Larena\Licensing\Enums\EntitlementStatus;
 
 /**
  * A `larena.entitlement` snapshot whose signature verified over its exact bytes. The fields are the registration
- * server's (schema_version 1) plus the site fields it may add: `site_hosts`, `updates_until`, `fresh_until`.
+ * server's (schema_version 1) plus the site fields it may add: `site_hosts`, `updates_until`, `fresh_until` and
+ * `trials` (the exact end of each running trial).
  */
 final readonly class VerifiedSnapshot implements EntitlementSnapshot
 {
@@ -24,6 +25,7 @@ final readonly class VerifiedSnapshot implements EntitlementSnapshot
      * @param list<string>                     $capabilities
      * @param list<string>|null                $siteHosts     null: the snapshot names no address
      * @param array<string,DateTimeImmutable>  $updatesUntil  package (or `*`) => last release date covered
+     * @param array<string,DateTimeImmutable>  $trials        capability held only by a running trial => when it ends
      */
     public function __construct(
         public string $keyId,
@@ -38,7 +40,14 @@ final readonly class VerifiedSnapshot implements EntitlementSnapshot
         public ?array $siteHosts,
         public array $updatesUntil,
         private string $signatureEnvelope,
+        public array $trials = [],
     ) {
+    }
+
+    /** When the running trial of a capability ends, as the snapshot says in `trials`; null when it names none. */
+    public function trialEnd(string $capability): ?DateTimeImmutable
+    {
+        return $this->trials[$capability] ?? null;
     }
 
     /** When the snapshot stops being fresh: its `fresh_until`, else 30 days after issue; never past a year. */

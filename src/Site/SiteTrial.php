@@ -90,6 +90,8 @@ final readonly class SiteTrial
             return $refuse('trial_not_granted', true);
         }
 
-        return new TrialResult(TrialResult::STARTED, $capability, 'trial_started', true, $snapshot->declaredFreshUntil ?? $snapshot->freshUntil());
+        $ends = $snapshot->trialEnd($capability) ?? $snapshot->declaredFreshUntil ?? $snapshot->freshUntil();
+
+        return new TrialResult(TrialResult::STARTED, $capability, 'trial_started', true, $ends);
     }
 }

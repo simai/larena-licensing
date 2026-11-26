@@ -174,6 +174,46 @@ check($keyless->request($chat)->reasonCode === 'site_key_required', 'no site key
 check($noServer->request($chat)->reasonCode === 'licensing_source_missing', 'only github: nowhere to ask');
 check($server->requests() === [] && !is_file($store), 'none of these asked the server or kept anything');
 
+// 4b. The exact trial end (Larena Server, larena.entitlement v1 `trials`): `trials[capability]` when the snapshot
+//     names it, else the `fresh_until` fallback. It is inside the signed bytes, so it is verified like the rest.
+$exactEnd = '2026-12-09T23:59:59+00:00';
+$store = $fx->folder() . '/snapshot.json';
+[$trial] = $trialFor($store);
+$server->reset();
+$server->answer = [200, $trialEnvelope(['status' => 'active', 'fresh_until' => '2026-11-27T11:30:00+00:00', 'trials' => [$chat => $exactEnd]])];
+$result = $trial->request($chat);
+check($result->started() && $result->endsAt?->format(DATE_ATOM) === $exactEnd, 'trials{} present: the trial ends at trials[capability]: ' . json_encode($result->toArray()));
+[, $kept] = $trialFor($store);
+check($kept->trialUntil($chat)?->format(DATE_ATOM) === $exactEnd, 'trials{} present: the site reads the exact end');
+check($kept->trialUntil() === null, 'an active licence with no capability named has no trial end');
+$entry = (new SiteCapabilities($catalog, $kept))->get($chat);
+check($entry !== null && $entry['decision'] === SiteCapabilities::ALLOWED && $entry['trial_until'] === $exactEnd, 'trials{} present: the screen shows the exact date, not fresh_until');
+check($entry['trial_days'] === 14, 'the read model carries the catalog trial length');
+// Without trials{} the fallback stays: a trial licence's fresh_until.
+$store = $fx->folder() . '/snapshot.json';
+[$trial] = $trialFor($store);
+$server->answer = [200, $trialEnvelope()];
+check($trial->request($chat)->endsAt?->format(DATE_ATOM) === '2026-12-09T11:30:00+00:00', 'trials{} absent: the fresh_until fallback');
+[, $kept] = $trialFor($store);
+check((new SiteCapabilities($catalog, $kept))->get($chat)['trial_until'] === '2026-12-09T11:30:00+00:00', 'trials{} absent: the screen shows fresh_until');
+// A trials{} changed after signing, or a malformed one, is refused and nothing is kept.
+$genuine = json_decode($trialEnvelope(['trials' => [$chat => $exactEnd]]), true);
+$tampered = json_decode($genuine['entitlement'], true);
+$tampered['trials'][$chat] = '2027-12-09T23:59:59+00:00';
+foreach ([
+    'a trials{} changed after signing' => [json_encode(['entitlement' => json_encode($tampered, JSON_UNESCAPED_SLASHES), 'signature' => $genuine['signature']], JSON_UNESCAPED_SLASHES), 'licensing_signature_invalid'],
+    'a trials{} for a capability not granted' => [$trialEnvelope(['trials' => ['larena.capability.workflow.base' => $exactEnd]]), 'licensing_snapshot_malformed'],
+    'a trials{} that is a list' => [$trialEnvelope(['trials' => [$exactEnd]]), 'licensing_snapshot_malformed'],
+    'a trials{} with a date that is not ATOM' => [$trialEnvelope(['trials' => [$chat => '09.12.2026']]), 'licensing_snapshot_malformed'],
+    'a trials{} ending before the issue date' => [$trialEnvelope(['trials' => [$chat => '2026-11-01T00:00:00+00:00']]), 'licensing_snapshot_malformed'],
+] as $case => [$answer, $code]) {
+    $store = $fx->folder() . '/snapshot.json';
+    [$trial] = $trialFor($store);
+    $server->answer = [200, $answer];
+    $result = $trial->request($chat);
+    check($result->reasonCode === 'trial_answer_refused' && $result->detail === $code && !is_file($store), $case . ' is refused: ' . json_encode($result->toArray()));
+}
+
 // 5. Words for every reason in ru and en; the command and the provider.
 foreach (['en', 'ru'] as $locale) {
     $lines = require $root . '/resources/lang/' . $locale . '/licensing.php';

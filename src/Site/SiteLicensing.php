@@ -110,13 +110,21 @@ final class SiteLicensing
     }
 
     /**
-     * When the site's trial ends: the kept snapshot's `fresh_until` (Larena Server keeps it within the trial end) while
-     * the licence status is `trial` and the snapshot counts. Null without a trial.
+     * When a trial ends, while the kept snapshot counts. With a capability that the snapshot names in `trials`, the exact
+     * end Larena Server gives for that capability's trial. Otherwise, while the licence status is `trial`, the snapshot's
+     * `fresh_until` (the server keeps it within the trial end), an older snapshot's only hint. Null without a trial.
      */
-    public function trialUntil(): ?DateTimeImmutable
+    public function trialUntil(?string $capability = null): ?DateTimeImmutable
     {
         $status = $this->status();
-        if (!$status->capabilitiesCount() || $status->snapshot === null || $status->snapshot->licenceStatus !== 'trial') {
+        if (!$status->capabilitiesCount() || $status->snapshot === null) {
+            return null;
+        }
+        $exact = $capability === null ? null : $status->snapshot->trialEnd($capability);
+        if ($exact !== null) {
+            return $exact;
+        }
+        if ($status->snapshot->licenceStatus !== 'trial') {
             return null;
         }
 

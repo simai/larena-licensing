@@ -14,13 +14,15 @@ site's own.
   it marks `planned` are left out) by `composer run catalog:refresh`; sites have no Specs checkout. `composer run catalog:check`
   (in the quality gate) checks it, its words in `resources/lang/{en,ru}/capabilities.php`, and that it matches a fresh
   build when Specs is found (skipped without it). `Catalog\SiteCapabilities` is the read model for screens: every
-  function with its words, package, tier, trial and the site's decision (`allowed`, `development`, `needs_licence`).
+  function with its words, package, tier, trial (and `trial_days`, its length from the registry) and the site's decision (`allowed`, `development`, `needs_licence`).
 
 - **Snapshot.** The registration server's envelope `{"entitlement": "<exact bytes>", "signature": "{\"key_id\",\"signature\"}"}`,
   Ed25519 over the exact bytes; the update server hands the same envelope to the site at `GET <source>/entitlement`.
   The entitlement is `larena.entitlement` schema_version 1 (`snapshot_key`, `site`, `product`, `status`,
   `capabilities`, `issued_at`, `valid_until`) with optional site fields: `site_hosts` (addresses the snapshot is for),
-  `updates_until` (`{"<package>|*": "<ATOM date>"}`) and `fresh_until` (how long it stays fresh; at most a year).
+  `updates_until` (`{"<package>|*": "<ATOM date>"}`) and `fresh_until` (how long it stays fresh; at most a year),
+  and `trials` (`{"<capability>": "<ATOM end>"}`: the exact end of each trial that alone holds a listed
+  capability). The trial end shown for a function is `trials[<capability>]`, else, while the status is `trial`, `fresh_until`.
 - **Keys.** `config/larena-entitlement-keys.php` of the site plus `LARENA_LICENSING_TRUSTED_KEYS` (`id=base64,…`);
   revoked ids (`LARENA_LICENSING_REVOKED_KEY_IDS`, and the update client's) win. Not the release keys: the snapshot
   key is online, the release key offline.

@@ -6,7 +6,7 @@ namespace Larena\Licensing\Catalog;
 
 /**
  * Builds the shipped catalog from the Specs capability registry (`specs/capabilities/registry.json`: id, package,
- * kind, default tier, trial, and the area, needs and always-on mark Specs keeps in `specs/capabilities/placement.json`),
+ * kind, default tier, trial and its length in days, and the area, needs and always-on mark Specs keeps in `specs/capabilities/placement.json`),
  * and checks a catalog: areas, needs, cycles and words in every language. A capability the registry marks `planned`
  * is not built yet and is left out. `scripts/refresh-capability-catalog.php` writes it and, in the package gate,
  * compares the shipped one with a fresh build whenever the Specs checkout is there.
@@ -53,6 +53,7 @@ final class CapabilityCatalogBuilder
                 'kind' => $kind,
                 'tier' => (string) ($capability['default_tier'] ?? ''),
                 'trial_eligible' => ($capability['trial_eligible'] ?? false) === true,
+                'trial_days' => CatalogCapability::days($capability['trial_days'] ?? null),
                 'area' => is_string($capability['area'] ?? null) ? $capability['area'] : '',
                 'always_on' => ($capability['always_on'] ?? false) === true,
                 'requires' => $requires,
@@ -110,6 +111,11 @@ final class CapabilityCatalogBuilder
             }
             if (($entry['always_on'] ?? false) === true && ($entry['tier'] ?? null) !== 'free') {
                 $errors[] = 'capability_always_on_not_free:' . $id;
+            }
+            $days = $entry['trial_days'] ?? null;
+            $trialable = ($entry['trial_eligible'] ?? false) === true && ($entry['tier'] ?? null) === 'paid';
+            if ($days !== null && (!$trialable || CatalogCapability::days($days) === null)) {
+                $errors[] = 'capability_trial_days_invalid:' . $id;
             }
             foreach (is_array($entry['requires'] ?? null) ? $entry['requires'] : [] as $required) {
                 if (!isset($ids[$required])) {

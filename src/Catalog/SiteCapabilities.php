@@ -15,7 +15,9 @@ use Larena\Licensing\Site\SiteLicensing;
  * - `development`: a paid function open because the site has a test address;
  * - `needs_licence`: paid, and the licence does not allow it.
  *
- * `trial_until` is the end of a trial («Попробовать бесплатно») that allows a paid function now, else null.
+ * `trial_until` is the end of a trial («Попробовать бесплатно») that allows a paid function now, else null: the
+ * snapshot's `trials` end for that function, else (licence status `trial`) its `fresh_until`. `trial_days` is how long
+ * a trial of the function lasts, from the Specs registry (null when it has no trial).
  */
 final readonly class SiteCapabilities
 {
@@ -32,13 +34,13 @@ final readonly class SiteCapabilities
         return $this->catalog;
     }
 
-    /** @return list<array{id:string, title_key:string, description_key:string, package:string, kind:string, tier:string, free:bool, trial_eligible:bool, area:string, always_on:bool, requires:list<string>, decision:string, reason_code:string, trial_until:?string}> */
+    /** @return list<array{id:string, title_key:string, description_key:string, package:string, kind:string, tier:string, free:bool, trial_eligible:bool, trial_days:?int, area:string, always_on:bool, requires:list<string>, decision:string, reason_code:string, trial_until:?string}> */
     public function all(): array
     {
         return array_map($this->entry(...), $this->catalog->all());
     }
 
-    /** @return array{id:string, title_key:string, description_key:string, package:string, kind:string, tier:string, free:bool, trial_eligible:bool, area:string, always_on:bool, requires:list<string>, decision:string, reason_code:string, trial_until:?string}|null */
+    /** @return array{id:string, title_key:string, description_key:string, package:string, kind:string, tier:string, free:bool, trial_eligible:bool, trial_days:?int, area:string, always_on:bool, requires:list<string>, decision:string, reason_code:string, trial_until:?string}|null */
     public function get(string $id): ?array
     {
         $capability = $this->catalog->get($id);
@@ -54,7 +56,7 @@ final readonly class SiteCapabilities
         return $entry !== null && $entry['decision'] !== self::NEEDS_LICENCE;
     }
 
-    /** @return array{id:string, title_key:string, description_key:string, package:string, kind:string, tier:string, free:bool, trial_eligible:bool, area:string, always_on:bool, requires:list<string>, decision:string, reason_code:string, trial_until:?string} */
+    /** @return array{id:string, title_key:string, description_key:string, package:string, kind:string, tier:string, free:bool, trial_eligible:bool, trial_days:?int, area:string, always_on:bool, requires:list<string>, decision:string, reason_code:string, trial_until:?string} */
     private function entry(CatalogCapability $capability): array
     {
         $free = $this->licensing->isFree($capability->id);
@@ -69,7 +71,7 @@ final readonly class SiteCapabilities
             };
             $reason = $answer->reasonCode;
         }
-        $trialUntil = !$free && $decision === self::ALLOWED && $reason === 'licence_trial' ? $this->licensing->trialUntil() : null;
+        $trialUntil = !$free && $decision === self::ALLOWED ? $this->licensing->trialUntil($capability->id) : null;
 
         return [
             'id' => $capability->id,
@@ -80,6 +82,7 @@ final readonly class SiteCapabilities
             'tier' => $capability->tier,
             'free' => $free,
             'trial_eligible' => $capability->trialEligible,
+            'trial_days' => $capability->trialDays,
             'area' => $capability->area,
             'always_on' => $capability->alwaysOn,
             'requires' => $capability->requires,

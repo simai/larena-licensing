@@ -6,7 +6,7 @@ namespace Larena\Licensing\Catalog;
 
 /**
  * One function of the shipped capability catalog ({@see CapabilityCatalog}): its registry id, the package that
- * declares it, its tier and trial from the Specs registry, and how a screen shows it (area, plain words, what it
+ * declares it, its tier, trial and trial length in days from the Specs registry, and how a screen shows it (area, plain words, what it
  * needs, whether it is the system itself and always on).
  */
 final readonly class CatalogCapability
@@ -25,6 +25,7 @@ final readonly class CatalogCapability
         public array $requires,
         public string $titleKey,
         public string $descriptionKey,
+        public ?int $trialDays = null,
     ) {
     }
 
@@ -50,7 +51,14 @@ final readonly class CatalogCapability
             $requires,
             (string) ($entry['title_key'] ?? ''),
             (string) ($entry['description_key'] ?? ''),
+            self::days($entry['trial_days'] ?? null),
         );
+    }
+
+    /** A trial length the catalog may carry: a whole number of days, 1 to 90; anything else is no length. */
+    public static function days(mixed $value): ?int
+    {
+        return is_int($value) && $value >= 1 && $value <= 90 ? $value : null;
     }
 
     /** @return array<string, mixed> */
@@ -62,6 +70,7 @@ final readonly class CatalogCapability
             'kind' => $this->kind,
             'tier' => $this->tier,
             'trial_eligible' => $this->trialEligible,
+            'trial_days' => $this->trialDays,
             'area' => $this->area,
             'always_on' => $this->alwaysOn,
             'requires' => $this->requires,

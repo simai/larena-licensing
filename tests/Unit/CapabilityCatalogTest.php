@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use Larena\Licensing\Catalog\CapabilityCatalog;
 use Larena\Licensing\Catalog\CapabilityCatalogBuilder;
+use Larena\Licensing\Catalog\CatalogCapability;
 use Larena\Licensing\Catalog\SiteCapabilities;
 use Larena\Licensing\Site\SnapshotStore;
 
@@ -23,6 +24,13 @@ check(count($catalog->all()) === 48, 'the catalog ships every registry capabilit
 check($catalog->get($free)?->isFree() === true && $catalog->get($paid)?->isFree() === false, 'tiers come from the registry');
 check(in_array($free, $catalog->freeIds(), true) && !in_array($paid, $catalog->freeIds(), true), 'free ids');
 check($catalog->get($paid)?->trialEligible === true && $catalog->get('larena.capability.telephony.enterprise_operations')?->tier === 'enterprise', 'trial and enterprise kept');
+// Trial length from the registry: 14 days on every trial-eligible paid function, none elsewhere.
+check($catalog->get($paid)?->trialDays === 14 && $catalog->get($free)?->trialDays === null, 'the catalog carries trial_days');
+foreach ($catalog->all() as $capability) {
+    $trialable = $capability->trialEligible && $capability->tier === 'paid';
+    check($capability->trialDays === ($trialable ? 14 : null), 'trial_days only on a trial-eligible paid function: ' . $capability->id);
+}
+check(CatalogCapability::days(0) === null && CatalogCapability::days(91) === null && CatalogCapability::days('14') === null && CatalogCapability::days(90) === 90, 'a trial length outside 1 to 90 whole days is no length');
 $languages = ['en' => require $root . '/resources/lang/en/capabilities.php', 'ru' => require $root . '/resources/lang/ru/capabilities.php'];
 $shipped = json_decode((string) file_get_contents(CapabilityCatalog::SHIPPED), true);
 check(is_array($shipped) && CapabilityCatalogBuilder::errors($shipped, $languages) === [], 'the shipped catalog is sound and has words in en and ru');
@@ -71,7 +79,7 @@ $registry = $specs !== null ? json_decode((string) file_get_contents($specs . '/
         'areas' => $shipped['areas'], 'packages' => [], 'capabilities' => array_map(static fn (array $entry): array => ['id' => $entry['id'],
             'package' => $entry['package'], 'kind' => $entry['kind'], 'default_tier' => $entry['tier'], 'status' => 'declared',
             'trial_eligible' => $entry['trial_eligible'], 'area' => $entry['area'], 'needs' => $entry['requires'],
-            'always_on' => $entry['always_on']], $shipped['capabilities'])];
+            'always_on' => $entry['always_on'], 'trial_days' => $entry['trial_days']], $shipped['capabilities'])];
 if ($specs !== null) {
     check(CapabilityCatalogBuilder::encode(CapabilityCatalogBuilder::build($registry)) === CapabilityCatalogBuilder::encode($shipped), 'shipped catalog matches the registry');
     check(CapabilityCatalogBuilder::registryErrors($registry) === [], 'the registry places every built capability');
@@ -107,6 +115,22 @@ foreach ($cycle['capabilities'] as $index => $entry) {
     }
 }
 check(in_array('capability_requires_cycle:' . $free, CapabilityCatalogBuilder::errors($cycle, $languages), true), 'a cycle is caught');
+foreach (['a free function' => [$free, 14], 'zero days' => [$paid, 0], 'more than 90 days' => [$paid, 91]] as $case => [$id, $days]) {
+    $bad = $shipped;
+    foreach ($bad['capabilities'] as $index => $entry) {
+        if ($entry['id'] === $id) {
+            $bad['capabilities'][$index]['trial_days'] = $days;
+        }
+    }
+    check(in_array('capability_trial_days_invalid:' . $id, CapabilityCatalogBuilder::errors($bad, $languages), true), 'bad trial_days caught: ' . $case);
+}
+$longer = $registry;
+foreach ($longer['capabilities'] as $index => $entry) {
+    if ($entry['id'] === $paid) {
+        $longer['capabilities'][$index]['trial_days'] = 30;
+    }
+}
+check(CapabilityCatalogBuilder::encode(CapabilityCatalogBuilder::build($longer)) !== CapabilityCatalogBuilder::encode($shipped), 'a trial length changed in the registry is drift');
 
 // 6. The gate runs the check.
 $composer = json_decode((string) file_get_contents($root . '/composer.json'), true);
